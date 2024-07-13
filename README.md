@@ -22,7 +22,8 @@ SMS, 이메일 중복확인 API 개발
 Resolves: #123
 Ref: #456
 Related to: #48, #45
-
+ 
+ 
 ## type
 각 커밋의 유형에 맞게 아래의 키워드 중 하나를 선택
  - feat: 새로운 기능
