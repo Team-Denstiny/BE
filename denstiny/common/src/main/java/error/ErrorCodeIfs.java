@@ -1,4 +1,4 @@
-package org.example.api.common.error;
+package error;
 
 public interface ErrorCodeIfs {
 

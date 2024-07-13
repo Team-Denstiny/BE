@@ -1,4 +1,4 @@
-package org.example.api.common.error;
+package error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

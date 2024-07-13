@@ -1,6 +1,6 @@
-package org.example.api.common.exception;
+package exception;
 
-import org.example.api.common.error.ErrorCodeIfs;
+import error.ErrorCodeIfs;
 
 public interface ApiExceptionIfs {
     ErrorCodeIfs getErrorCodeIfs();

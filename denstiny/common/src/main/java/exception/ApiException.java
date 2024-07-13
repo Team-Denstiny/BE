@@ -1,7 +1,7 @@
-package org.example.api.common.exception;
+package exception;
 
+import error.ErrorCodeIfs;
 import lombok.Getter;
-import org.example.api.common.error.ErrorCodeIfs;
 @Getter
 public class ApiException extends RuntimeException implements ApiExceptionIfs{
 
