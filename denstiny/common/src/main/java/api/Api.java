@@ -31,7 +31,7 @@ public class Api<T> { // Api 스펙의 최상위를 담당할 Api 클래스
      * 실제 result 값을 이용해 -> Error 이용
      */
 
-    public static Api<Object> Error(Result result){
+    public static Api<Object> ERROR(Result result){
         Api<Object> api = new Api<Object>();
         api.result = result;
         return api;
@@ -41,7 +41,7 @@ public class Api<T> { // Api 스펙의 최상위를 담당할 Api 클래스
      * ErrorCodeIfs를 이용해 -> Error 이용
      */
 
-    public static Api<Object> Error(ErrorCodeIfs errorCodeIfs){
+    public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs);
         return api;
@@ -50,7 +50,7 @@ public class Api<T> { // Api 스펙의 최상위를 담당할 Api 클래스
      * ErrorCodeIfs, Throwable 을 이용해 -> Error 이용
      */
 
-    public static Api<Object> Error(ErrorCodeIfs errorCodeIfs, Throwable tx){
+    public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs, Throwable tx){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs, tx);
         return api;
@@ -60,7 +60,7 @@ public class Api<T> { // Api 스펙의 최상위를 담당할 Api 클래스
      * ErrorCodeIfs, description 을 이용해 -> Error 이용
      */
 
-    public static Api<Object> Error(ErrorCodeIfs errorCodeIfs, String description){
+    public static Api<Object> ERROR(ErrorCodeIfs errorCodeIfs, String description){
         Api<Object> api = new Api<Object>();
         api.result = Result.ERROR(errorCodeIfs, description);
         return api;
