@@ -7,14 +7,17 @@ import lombok.RequiredArgsConstructor;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.user.enums.UserRole;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
-    private final UserRepository memberRepository;
+    private final UserRepository userRepository;
 
     /**
      * 1. 일반 회원 가입시 주소를 입력하는 경우 사용하는 메서드
@@ -30,14 +33,13 @@ public class UserService {
         return Optional.ofNullable(memberEntity)
                 .map(it ->{
                     memberEntity.setRole(UserRole.MEMBER);
-                    return memberRepository.save(memberEntity);
+                    return userRepository.save(memberEntity);
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "User Entity Null"));
     }
-
     private boolean isDuplicateEmail(String email){
-        return memberRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmail(email).isPresent();
     }
     private boolean isDuplicateNickname(String nickName){
-        return memberRepository.findByNickName(nickName).isPresent();
+        return userRepository.findByNickName(nickName).isPresent();
     }
 }
