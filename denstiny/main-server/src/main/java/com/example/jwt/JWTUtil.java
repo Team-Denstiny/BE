@@ -1,5 +1,8 @@
 package com.example.jwt;
 
+import com.example.exception.TokenException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -7,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.SignatureException;
 import java.util.Date;
 
 @Component
@@ -19,8 +23,12 @@ public class JWTUtil {
     }
 
     /**
-     * 토큰 검증 3가지 메서드
+     * 토큰 검증 4가지 메서드
      */
+    public String getCategory(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    }
+
     public String getEmail(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
@@ -38,13 +46,15 @@ public class JWTUtil {
      * @param expiredMs
      */
 
-    public String createJwt(String email, String role, Long expiredMs){
+    public String createJwt(String category,String email, String role, Long expiredMs){
         return Jwts.builder()
                 .claim("email", email)
                 .claim("role", role)
+                .claim("category",category)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
+
 }
