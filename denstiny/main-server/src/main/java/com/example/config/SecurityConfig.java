@@ -6,6 +6,7 @@ import com.example.jwt.JWTUtil;
 import com.example.jwt.LoginFilter;
 import com.example.refresh.RefreshRepository;
 import com.example.user.enums.UserRole;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -49,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/open-api/users/login", "/open-api/users/register", "/open-api/users/reissue").permitAll()
                         .requestMatchers("/admin").hasRole(String.valueOf(UserRole.ADMIN))
                         .anyRequest().authenticated())
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil,objectMapper), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshRepository), LogoutFilter.class)
                 .sessionManagement((session) -> session
