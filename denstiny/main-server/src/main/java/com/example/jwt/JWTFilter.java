@@ -1,8 +1,11 @@
 package com.example.jwt;
 
+import api.Result;
 import com.example.domain.user.controller.model.CustomUserDetails;
+import com.example.error.TokenErrorCode;
 import com.example.user.UserEntity;
 import com.example.user.enums.UserRole;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,19 +13,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
+    private final ObjectMapper objectMapper;
     public final static String HEADER_AUTHORIZATION = "Authorization";
     public final static String TOKEN_PREFIX = "Bearer ";
 
@@ -33,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // access키에 담긴 토큰 꺼내기
         if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX)){
-            log.info("token null");
+            log.info("토큰이 없거나 Bearer로 시작하지 않습니다.");
             filterChain.doFilter(request,response);
 
             // 조건이 해당되면 메서드 종료
@@ -47,24 +52,28 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
 
-            //response body
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
+            // 만료된 토큰에 대한 응답 생성
+            Result result = Result.ERROR(TokenErrorCode.EXPIRED_AT, "액세스 토큰이 만료되었습니다.");
+            ResponseEntity<Result> responseEntity = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+            response.setContentType("application/json; charset=UTF-8");
 
-            //response status code
             // 이 부분에서 Front end 개발자와 [협의된 응답]을 주어야 한다
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(objectMapper.writeValueAsString(result));
             return;
+
         }
 
         // 토큰이 access 인지 확인(발급 페이로드 확인)
         String category = jwtUtil.getCategory(accessToken);
         if (!category.equals("access")){
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
+            // 잘못된 토큰에 대한 응답 생성
+            Result result = Result.ERROR(TokenErrorCode.INVALID_TOKEN, "유효하지 않은 액세스 토큰입니다.");
+            response.setContentType("application/json; charset=UTF-8");
 
-            // response status code
+            // 이 부분에서 Front end 개발자와 [협의된 응답]을 주어야 한다
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(objectMapper.writeValueAsString(result));
             return;
         }
 
@@ -87,8 +96,8 @@ public class JWTFilter extends OncePerRequestFilter {
         //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
+        // 다음 필터로
         filterChain.doFilter(request, response);
-
 
     }
 
