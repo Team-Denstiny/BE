@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -90,26 +91,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // TODO RDB <--> REDIS
         addRefreshEntity(email, refresh,86400000L);
 
-        //응답 설정
-        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX+access);
-        response.addCookie(createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
-
         // JSON 응답 설정
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=UTF-8");
 
         Result result = new Result(200, "로그인 성공", "성공");
-        Api<Object> apiResponse = new Api<>(result, null);
+        ResponseEntity<Result> responseEntity = new ResponseEntity<>(result, HttpStatus.OK);
 
         // JSON 응답을 문자열로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+        String jsonResponse = objectMapper.writeValueAsString(responseEntity.getBody());
 
         // 응답 작성
-        PrintWriter writer = response.getWriter();
-        writer.write(jsonResponse);
-        writer.flush();
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
+
+        // 헤더와 쿠키 설정
+        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + access);
+        response.addCookie(createCookie("refresh", refresh));
     }
 
     private Cookie createCookie(String key, String value) {
@@ -126,7 +124,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 
-        response.setStatus(401);
+        // JSON 응답 설정
+        response.setContentType("application/json; charset=UTF-8");
+
+        // 실패 응답 메시지
+        Result result = new Result(401, "로그인 실패", "인증에 실패하였습니다.");
+        ResponseEntity<Result> responseEntity = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+
+        // JSON 응답을 문자열로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseEntity.getBody());
+
+        // 응답 작성
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
