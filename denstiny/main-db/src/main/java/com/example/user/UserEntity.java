@@ -26,7 +26,7 @@ public class UserEntity {
     private String nickName;
 
     @Column(name = "birth_at")
-    private Integer birthAt;
+    private String birthAt;
 
     private String email;
 
@@ -39,5 +39,11 @@ public class UserEntity {
     private String phoneNumber;
 
     private String address;
+
+    @Column(name = "resource_name")
+    private String resourceName;
+
+    @Column(name = "profile_img")
+    private String profileImg;
 
 }
