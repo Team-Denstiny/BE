@@ -91,6 +91,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // TODO RDB <--> REDIS
         addRefreshEntity(email, refresh,86400000L);
 
+        // 헤더와 쿠키 설정
+        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + access);
+        response.addCookie(createCookie("refresh", refresh));
+
+
         // JSON 응답 설정
         response.setContentType("application/json; charset=UTF-8");
 
@@ -105,9 +110,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
 
-        // 헤더와 쿠키 설정
-        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + access);
-        response.addCookie(createCookie("refresh", refresh));
+
+        // 로그인 성공
+        log.info("로그인에 성공하였습니다. 이메일 : {}", email);
     }
 
     private Cookie createCookie(String key, String value) {
@@ -138,6 +143,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 응답 작성
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
+        // 로그인 실패
+        log.info("로그인에 실패하였습니다");
     }
 
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {

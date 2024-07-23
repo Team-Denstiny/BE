@@ -38,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // access키에 담긴 토큰 꺼내기
         if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX)){
-            log.info("토큰이 없거나 Bearer로 시작하지 않습니다.");
+//            log.info("토큰이 없거나 Bearer로 시작하지 않습니다.");
             filterChain.doFilter(request,response);
 
             // 조건이 해당되면 메서드 종료
