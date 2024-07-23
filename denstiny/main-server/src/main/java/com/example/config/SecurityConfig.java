@@ -4,6 +4,8 @@ import com.example.jwt.CustomLogoutFilter;
 import com.example.jwt.JWTFilter;
 import com.example.jwt.JWTUtil;
 import com.example.jwt.LoginFilter;
+import com.example.oauth2.handler.CustomSuccessHandler;
+import com.example.oauth2.service.CustomOAuth2UserService;
 import com.example.refresh.RefreshRepository;
 import com.example.user.enums.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,8 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final ObjectMapper objectMapper;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -47,9 +51,14 @@ public class SecurityConfig {
                 .csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
+                //oauth2
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/open-api/users/login", "/open-api/users/register", "/open-api/users/reissue").permitAll()
-                        .requestMatchers("/admin").hasRole(String.valueOf(UserRole.ADMIN))
+                        .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTFilter(jwtUtil,objectMapper), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class)
