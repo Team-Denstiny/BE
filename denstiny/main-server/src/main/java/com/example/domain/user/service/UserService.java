@@ -32,7 +32,7 @@ public class UserService {
         }
         return Optional.ofNullable(memberEntity)
                 .map(it ->{
-                    memberEntity.setRole(UserRole.MEMBER);
+                    memberEntity.setRole(UserRole.ROLE_MEMBER);
                     return userRepository.save(memberEntity);
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "User Entity Null"));
     }

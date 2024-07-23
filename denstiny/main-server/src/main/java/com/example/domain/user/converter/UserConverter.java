@@ -25,7 +25,7 @@ public class UserConverter {
                             .email(request.getEmail())
                             .nickName(request.getNickName())
                             .password(bCryptPasswordEncoder.encode(request.getPassword())) // 비밀번호 암호화
-                            .birthAt(request.getBirthAt())
+                            .birthAt(String.valueOf(request.getBirthAt()))
                             .phoneNumber(request.getPhoneNumber())
                             .address(request.getAddress())
                             .build();
