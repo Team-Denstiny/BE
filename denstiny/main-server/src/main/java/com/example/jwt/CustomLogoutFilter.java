@@ -101,6 +101,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
+
+        // TODO 로그인되지 않은 메인페이지로 이동
     }
 
 }
