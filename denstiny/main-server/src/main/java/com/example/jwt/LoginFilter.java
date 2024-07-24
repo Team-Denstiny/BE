@@ -3,6 +3,7 @@ package com.example.jwt;
 import api.Api;
 import api.Result;
 import com.example.domain.user.controller.model.CustomUserDetails;
+import com.example.domain.user.controller.model.UserLoginResponse;
 import com.example.domain.user.controller.model.UserLoginRequest;
 import com.example.refresh.RefreshEntity;
 import com.example.refresh.RefreshRepository;
@@ -14,7 +15,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -43,7 +42,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,RefreshRepository refreshRepository) {
         super.setAuthenticationManager(authenticationManager);
-        setFilterProcessesUrl("/open-api/users/login"); // 커스텀 로그인 경로 설정 (spring security 기본 경로는 /login)
+        setFilterProcessesUrl("/api/users/login"); // 커스텀 로그인 경로 설정 (spring security 기본 경로는 /login)
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -78,6 +77,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //유저 정보
         String email = authentication.getName();
 
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -100,11 +102,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType("application/json; charset=UTF-8");
 
         Result result = new Result(200, "로그인 성공", "성공");
-        ResponseEntity<Result> responseEntity = new ResponseEntity<>(result, HttpStatus.OK);
+        UserLoginResponse loginUser = UserLoginResponse.builder().id(userId).build();
 
-        // JSON 응답을 문자열로 변환
+        Api<UserLoginResponse> apiResponse = new Api<>(result, loginUser);
+
+        // JSON 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(responseEntity.getBody());
+        String jsonResponse = objectMapper.writeValueAsString(apiResponse);
+
 
         // 응답 작성
         response.getWriter().write(jsonResponse);
