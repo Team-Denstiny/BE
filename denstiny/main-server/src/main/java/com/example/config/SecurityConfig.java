@@ -57,7 +57,7 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/open-api/users/login", "/open-api/users/register", "/open-api/users/reissue").permitAll()
+                        .requestMatchers("/api/users/login", "/api/users/register", "/api/users/reissue").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTFilter(jwtUtil,objectMapper), LoginFilter.class)
