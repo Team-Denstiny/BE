@@ -2,6 +2,8 @@ package com.example.oauth2.handler;
 
 import com.example.jwt.JWTUtil;
 import com.example.oauth2.dto.CustomOAuth2User;
+import com.example.refresh.RefreshEntity;
+import com.example.refresh.RefreshRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @Component
@@ -21,6 +24,8 @@ import java.util.Iterator;
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -30,15 +35,24 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String username = customUserDetails.getResourceName();
 
+        String email = customUserDetails.getEmail();
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
         // 하이퍼 링크 방식 -> redirect , header방식으로 보내주면 front측에서 받을 수 없음 (일단 쿠키로 보내기)
-        String accessToken = jwtUtil.createJwt("access", username, role, 60 * 60 * 60L);
+        String accessToken = jwtUtil.createJwt("access", email, role, 600000L);
+        String refreshToken = jwtUtil.createJwt("refresh", email,role,86400000L );
+
+        // refresh entity에 저장
+        addRefreshEntity(email, refreshToken,86400000L);
+
         response.addCookie(createCookie("access", accessToken));
+        response.addCookie(createCookie("refresh", refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
+        // redirect
         response.sendRedirect("http://localhost:3000/");
 
     }
@@ -52,5 +66,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+
+        RefreshEntity refreshEntity = RefreshEntity.builder()
+                .email(email)
+                .refresh(refresh)
+                .expiration(date.toString())
+                .build();
+
+        refreshRepository.save(refreshEntity);
     }
 }
