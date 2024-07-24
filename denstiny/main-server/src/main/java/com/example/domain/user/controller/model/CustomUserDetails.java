@@ -53,4 +53,9 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    // ID를 반환하는 메서드 추가
+    public Long getUserId() {
+        return userEntity.getUserId();
+    }
 }

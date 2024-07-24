@@ -7,7 +7,6 @@ import com.example.domain.user.controller.model.UserRegisterRequest;
 import com.example.domain.user.controller.model.UserRegisterResponse;
 import com.example.domain.user.controller.model.UserResponse;
 import com.example.domain.user.controller.model.UserUpdateRequest;
-import com.example.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class UserOpenApiController {
+public class UserApiController {
 
     private final UserBusiness userBusiness;
 
