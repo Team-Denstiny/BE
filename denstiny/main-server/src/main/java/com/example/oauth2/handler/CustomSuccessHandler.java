@@ -1,5 +1,6 @@
 package com.example.oauth2.handler;
 
+import com.example.domain.user.controller.model.CustomUserDetails;
 import com.example.jwt.JWTUtil;
 import com.example.oauth2.dto.CustomOAuth2User;
 import com.example.refresh.RefreshEntity;
@@ -33,7 +34,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        String username = customUserDetails.getResourceName();
+
+        // TODO login성공시 redirect로 body에 담아서 전달
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
 
         String email = customUserDetails.getEmail();
 
