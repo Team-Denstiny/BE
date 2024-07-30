@@ -1,7 +1,9 @@
 package com.example.oauth2.dto;
 
-import java.util.Map;
+import lombok.ToString;
 
+import java.util.Map;
+@ToString
 public class NaverResponse implements OAuth2Response {
 
     private final Map<String, Object> attribute;
