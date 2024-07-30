@@ -1,9 +1,6 @@
 package com.example.oauth2.service;
 
-import com.example.oauth2.dto.CustomOAuth2User;
-import com.example.oauth2.dto.NaverResponse;
-import com.example.oauth2.dto.OAuth2Response;
-import com.example.oauth2.dto.UserDTO;
+import com.example.oauth2.dto.*;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.user.enums.UserRole;
@@ -14,7 +11,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -37,12 +33,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
                 break;
             case "kakao":
-                //TODO kakao는 naver 이후에 추가 예정
+                oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
                 break;
             default:
                 oAuth2Response = null;
                 break;
         }
+        log.info("response {}",oAuth2Response);
 
         String resourceName = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
 
@@ -81,7 +78,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else {
 
             existData.setEmail(oAuth2Response.getEmail());
-            existData.setName(oAuth2User.getName());
+            existData.setName(oAuth2Response.getName());
             existData.setNickName(oAuth2Response.getNickname());
             existData.setPhoneNumber(oAuth2Response.getPhone());
             existData.setProfileImg(oAuth2Response.getProfile());
