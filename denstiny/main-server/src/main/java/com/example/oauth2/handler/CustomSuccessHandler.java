@@ -5,6 +5,9 @@ import com.example.jwt.JWTUtil;
 import com.example.oauth2.dto.CustomOAuth2User;
 import com.example.refresh.RefreshEntity;
 import com.example.refresh.RefreshRepository;
+import com.example.user.UserEntity;
+import com.example.user.UserRepository;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +30,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
 
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -40,6 +42,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        Long userId = userDetails.getUserId();
 
         String email = customUserDetails.getEmail();
+        
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -55,9 +58,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie("access", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
+
+        /// ==> ++ 여기에 id 추가해서 보내달라.
         response.setStatus(HttpServletResponse.SC_OK);
         // redirect
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:5173/");
 
     }
 
