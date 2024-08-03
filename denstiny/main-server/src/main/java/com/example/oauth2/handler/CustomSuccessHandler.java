@@ -8,6 +8,9 @@ import com.example.refresh.RefreshRepository;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 
+import com.example.user.UserRepository;
+import error.ErrorCode;
+import exception.ApiException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +40,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
 
-        // TODO login성공시 redirect로 body에 담아서 전달
-//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-//        Long userId = userDetails.getUserId();
+//        Long userId = userRepository.findByNickName(customUserDetails.getNickname())
+//                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT)).getUserId();
 
         String email = customUserDetails.getEmail();
         

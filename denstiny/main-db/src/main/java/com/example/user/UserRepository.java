@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
     Optional<UserEntity> findFirstByEmailAndPassword(String email, String password);
 
     UserEntity findByResourceName(String resourceName);
+    // 닉네임 중복 검증
+    boolean existsByNickName(String nickName);
 }

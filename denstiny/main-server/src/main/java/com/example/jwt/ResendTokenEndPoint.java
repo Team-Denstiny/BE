@@ -1,19 +1,25 @@
 package com.example.jwt;
-import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
+import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/login")
 public class ResendTokenEndPoint {
 
-
+    /* 
     @GetMapping("/endpoint")
     public Map<String, String> handleRequest(@RequestHeader Map<String, String> headers) {
         // 로그에 요청 헤더를 출력합니다.
@@ -27,23 +33,31 @@ public class ResendTokenEndPoint {
         response.put("message", "Request received and headers logged.");
         return response;
     }
+        */
 
-    /* 
-    @GetMapping("/endpoint")
-     public Map<String, String> getCookieData(@RequestHeader(value = "Cookie", required = false) String cookiesHeader) {
-        Map<String, String> response = new HashMap<>();
-        System.out.println("Get into!!!");
-        if (cookiesHeader != null && cookiesHeader.contains("access")) {
-            String[] cookies = cookiesHeader.split(";");
-            for (String cookie : cookies) {
-                if (cookie.trim().startsWith("access")) {
-                    String cookieValue = cookie.split("=")[1];
-                    System.out.println(cookieValue);
-                    response.put("cookieData", cookieValue);
-                }
+@GetMapping("/endpoint")
+public ResponseEntity<Map<String, String>> getCookieData(HttpServletRequest request) {
+    System.out.println("Get into!!!");
+
+    Cookie[] cookies = request.getCookies();
+    HttpHeaders headers = new HttpHeaders();
+    Map<String, String> response = new HashMap<>();
+    
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("access")) {
+                String cookieValue = cookie.getValue();
+                System.out.println(cookieValue);
+                headers.set(HEADER_AUTHORIZATION, TOKEN_PREFIX + cookieValue);
+                response.put("cookieData", cookieValue); // 응답에 cookieData 포함
             }
         }
-        return response;
     }
-        */
+    
+    return ResponseEntity.ok()
+            .headers(headers)
+            .body(response); // JSON 응답으로 반환
+    }
 }
+
+

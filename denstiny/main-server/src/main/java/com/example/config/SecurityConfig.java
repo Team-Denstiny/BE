@@ -22,6 +22,11 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+
 
 @Configuration
 @EnableWebSecurity
@@ -49,16 +54,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                configuration.setAllowedMethods(Collections.singletonList("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setAllowedHeaders(Collections.singletonList("*"));
+                configuration.setMaxAge(3600L);
+
+                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                return configuration;
+                }))
                 .csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
-                //oauth2
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/users/login", "/api/users/register", "/api/users/reissue").permitAll()
+                        .requestMatchers("/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTFilter(jwtUtil,objectMapper), OAuth2LoginAuthenticationFilter.class)
@@ -69,5 +86,4 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
-
 }
