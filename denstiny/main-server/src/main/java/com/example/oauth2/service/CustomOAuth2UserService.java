@@ -47,9 +47,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         UserEntity existData = userRepository.findByResourceName(resourceName);
 
         if (existData == null){
+
+            // 유니크한 닉네임 저장하는 로직
+            String uniqueNickname = getUniqueNickname(oAuth2Response.getNickname());
+
             UserEntity userEntity = UserEntity.builder()
                     .name(oAuth2Response.getName())
-                    .nickName(oAuth2Response.getNickname())
+                    .nickName(uniqueNickname)
                     .birthAt(oAuth2Response.getBirthyear())
                     .email(oAuth2Response.getEmail())
                     .role(UserRole.ROLE_MEMBER)
@@ -98,5 +102,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return new CustomOAuth2User(userDTO);
         }
+
+    }
+
+    private String getUniqueNickname(String baseNickname) {
+        String uniqueNickname = baseNickname;
+        int count = 1;
+        while (userRepository.existsByNickName(uniqueNickname)) {
+            uniqueNickname = baseNickname + count;
+            count++;
+        }
+        return uniqueNickname;
     }
 }
