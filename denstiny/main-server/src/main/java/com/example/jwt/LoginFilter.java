@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
-import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {

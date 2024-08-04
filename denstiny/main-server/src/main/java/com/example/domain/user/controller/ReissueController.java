@@ -20,8 +20,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
-import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
+
 
 @RestController
 @RequiredArgsConstructor

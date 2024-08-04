@@ -1,8 +1,5 @@
 package com.example.jwt;
 
-import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
-import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @RestController
 @RequestMapping("/login")
