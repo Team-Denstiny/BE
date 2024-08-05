@@ -60,12 +60,14 @@ public class ResendTokenEndPoint {
                 if (cookie.getName().equals("access")) {
                     String cookieValue = cookie.getValue();
 
+                    // 토큰에서 -> resourceId 획득
                     String resourceId = jwtUtil.getResourceId(cookieValue);
 
                     log.info("resourceId : {}",resourceId);
-
-                    UserEntity byResourceId = userRepository.findByResourceId(resourceId);
-                    Long userId = byResourceId.getUserId();
+                    UserEntity user = userRepository.findByResourceId(resourceId);
+                    // 주소 업데이트
+                    user.setAddress(oauth2AddressPlusDto.getAddress());
+                    Long userId = user.getUserId();
 
 
                     headers.set(HEADER_AUTHORIZATION, TOKEN_PREFIX + cookieValue);
