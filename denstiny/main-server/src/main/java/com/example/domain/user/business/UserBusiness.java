@@ -21,9 +21,9 @@ public class UserBusiness {
     private final UserConverter userConverter;
     private final UserService userService;
 
-    public UserRegisterResponse registerMember(UserRegisterRequest memberRegisterRequest){
+    public UserRegisterResponse registerMember(UserRegisterRequest userRegisterRequest){
 
-        return Optional.ofNullable(memberRegisterRequest)
+        return Optional.ofNullable(userRegisterRequest)
                 .map(it -> userConverter.toEntity(it))
                 .map(it -> userService.register(it))
                 .map(it -> userConverter.toRegisterResponse(it))
