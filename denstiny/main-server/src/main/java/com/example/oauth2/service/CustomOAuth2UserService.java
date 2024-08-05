@@ -45,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String resourceId = oAuth2Response.getProviderId();
 
         // db에 oauth2 로그인 정보 저장
-        UserEntity existData = userRepository.findByResourceName(resourceName);
+        UserEntity existData = userRepository.findByResourceId(resourceId);
 
         if (existData == null){
 
