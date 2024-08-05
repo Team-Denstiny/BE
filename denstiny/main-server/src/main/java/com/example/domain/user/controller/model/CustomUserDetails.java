@@ -58,4 +58,8 @@ public class CustomUserDetails implements UserDetails {
     public Long getUserId() {
         return userEntity.getUserId();
     }
+
+    public String getResourceId(){
+        return userEntity.getResourceId();
+    }
 }

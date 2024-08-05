@@ -41,7 +41,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         log.info("response {}",oAuth2Response);
 
-        String resourceName = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        String resourceName = oAuth2Response.getProvider();
+        String resourceId = oAuth2Response.getProviderId();
 
         // db에 oauth2 로그인 정보 저장
         UserEntity existData = userRepository.findByResourceName(resourceName);
@@ -60,6 +61,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .phoneNumber(oAuth2Response.getPhone())
 //                    .address()
                     .resourceName(resourceName)
+                    .resourceId(resourceId)
                     .profileImg(oAuth2Response.getProfile())
                     .build();
 
@@ -68,6 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             UserDTO userDTO = UserDTO.builder()
                     .resourceName(resourceName)
+                    .resourceId(resourceId)
                     .role(UserRole.ROLE_MEMBER.toString())
                     .name(oAuth2Response.getName())
                     .nickname(oAuth2Response.getNickname())
@@ -76,6 +79,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .phoneNumber(oAuth2Response.getPhone())
                     .profileImg(oAuth2Response.getProfile())
                     .build();
+
             return new CustomOAuth2User(userDTO);
 
         }
@@ -91,6 +95,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             UserDTO userDTO = UserDTO.builder()
                     .resourceName(existData.getResourceName())
+                    .resourceId(existData.getResourceId())
                     .role(UserRole.ROLE_MEMBER.toString())
                     .name(oAuth2Response.getName())
                     .nickname(oAuth2Response.getNickname())

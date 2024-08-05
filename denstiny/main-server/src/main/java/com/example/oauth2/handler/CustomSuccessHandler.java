@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -36,27 +37,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        //OAuth2User
-        CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
-
-//        Long userId = userRepository.findByNickName(customUserDetails.getNickname())
-//                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT)).getUserId();
-
-        String email = customUserDetails.getEmail();
-        
+        CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
+        String resourceId = userDetails.getResourceId();
+
         // 하이퍼 링크 방식 -> redirect , header방식으로 보내주면 front측에서 받을 수 없음 (일단 쿠키로 보내기)
-        String accessToken = jwtUtil.createJwt("access", email, role, 600000L);
-        String refreshToken = jwtUtil.createJwt("refresh", email,role,86400000L );
+        String accessToken = jwtUtil.createJwt("access", resourceId, role, 600000L);
+        String refreshToken = jwtUtil.createJwt("refresh", resourceId,role,86400000L );
 
         // refresh entity에 저장
-        addRefreshEntity(email, refreshToken,86400000L);
+        addRefreshEntity(resourceId, refreshToken,86400000L);
 
         response.addCookie(createCookie("access", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
@@ -79,12 +74,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         return cookie;
     }
 
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
+    private void addRefreshEntity(String resourceId, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         RefreshEntity refreshEntity = RefreshEntity.builder()
-                .email(email)
+                .resourceId(resourceId)
                 .refresh(refresh)
                 .expiration(date.toString())
                 .build();

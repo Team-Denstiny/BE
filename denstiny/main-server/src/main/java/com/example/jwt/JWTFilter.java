@@ -4,6 +4,7 @@ import api.Result;
 import com.example.domain.user.controller.model.CustomUserDetails;
 import com.example.error.TokenErrorCode;
 import com.example.user.UserEntity;
+import com.example.user.UserRepository;
 import com.example.user.enums.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -79,16 +80,17 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        //토큰에서 username과 role 획득
-        String email = jwtUtil.getEmail(accessToken);
+        String resourceId = jwtUtil.getResourceId(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
         //userEntity를 생성하여 값 set
         UserEntity userEntity = UserEntity.builder()
-                .email(email)
+                .resourceId(resourceId)
                 .password("temppassword")
                 .role(UserRole.valueOf(role))
                 .build();
+
+        log.info("UserEntity: {}",userEntity);
 
         //UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
