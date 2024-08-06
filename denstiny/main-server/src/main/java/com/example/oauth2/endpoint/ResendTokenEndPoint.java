@@ -3,13 +3,20 @@ package com.example.oauth2.endpoint;
 import java.util.HashMap;
 import java.util.Map;
 
+import api.Api;
+import api.Result;
+import com.example.error.TokenErrorCode;
+import com.example.error.UserErrorCode;
 import com.example.jwt.JWTUtil;
 import com.example.oauth2.dto.Oauth2AddressPlusDto;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
+import error.ErrorCode;
+import exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,40 +52,52 @@ public class ResendTokenEndPoint {
         */
 
     @PostMapping("/endpoint")
-    public ResponseEntity<Map<String, Long>> getCookieData(
+    public ResponseEntity<Api<Map<String, Long>>> getCookieData(
             HttpServletRequest request,
             @RequestBody Oauth2AddressPlusDto oauth2AddressPlusDto
     ) {
-
-
         Cookie[] cookies = request.getCookies();
         HttpHeaders headers = new HttpHeaders();
-        Map<String, Long> response = new HashMap<>();
+        Map<String, Long> responseBody = new HashMap<>();
+
+        Result result = new Result(HttpStatus.OK.value(), "로그인 성공", "성공");
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("access")) {
                     String cookieValue = cookie.getValue();
 
-                    // 토큰에서 -> resourceId 획득
+                    // 토큰에서 resourceId 획득
                     String resourceId = jwtUtil.getResourceId(cookieValue);
-
-                    log.info("resourceId : {}",resourceId);
+                    log.info("resourceId : {}", resourceId);
                     UserEntity user = userRepository.findByResourceId(resourceId);
-                    // 주소 업데이트
-                    user.setAddress(oauth2AddressPlusDto.getAddress());
-                    Long userId = user.getUserId();
 
+                    if (user != null) {
+                        // 주소 업데이트
+                        user.setAddress(oauth2AddressPlusDto.getAddress());
+                        Long userId = user.getUserId();
 
-                    headers.set(HEADER_AUTHORIZATION, TOKEN_PREFIX + cookieValue);
-                    response.put("id", userId);
+                        headers.set(HEADER_AUTHORIZATION, TOKEN_PREFIX + cookieValue);
+                        responseBody.put("id", userId);
+                    } else {
+                        throw new ApiException(UserErrorCode.USER_NOT_FOUND, "사용자를 찾을 수 없습니다");
+                    }
+                    break; // 쿠키가 발견되면 반복을 종료합니다.
                 }
             }
+
+            if (responseBody.isEmpty()) {
+                throw new ApiException(TokenErrorCode.INVALID_TOKEN, "쿠키안에 담긴 토큰이 유효하지 않습니다");
+            }
+        } else {
+            throw new ApiException(ErrorCode.NULL_POINT, "쿠키가 존재하지 않습니다");
         }
+
+        Api<Map<String, Long>> apiResponse = new Api<>(result, responseBody);
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(response); // JSON 응답으로 반환
+                .body(apiResponse);
     }
 }
 
