@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTFilter(jwtUtil,objectMapper,userRepository), OAuth2LoginAuthenticationFilter.class)
-                .addFilterAfter(new AuthorizationFilter(), JWTFilter.class)
+                .addFilterAfter(new AuthorizationFilter(objectMapper), JWTFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshRepository), LogoutFilter.class)
                 .sessionManagement((session) -> session
