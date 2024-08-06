@@ -22,7 +22,7 @@ configurations {
 dependencies {
 
     implementation project(':common')
-    implementation project(':main-db')
+    implementation project(':sql-db')
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

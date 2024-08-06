@@ -1,5 +1,5 @@
 rootProject.name = 'denstiny'
 include 'common'
 include 'main-server'
-include 'main-db'
+include 'sql-db'
 
