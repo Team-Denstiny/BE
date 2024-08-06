@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserApiController {
 
     private final UserBusiness userBusiness;
 
-    @RequestMapping("/register")
+    @RequestMapping("/users/register")
     public Api<UserRegisterResponse> register(
             @Valid
             @RequestBody UserRegisterRequest request
@@ -27,7 +27,7 @@ public class UserApiController {
         return new Api<>(new Result(201, "회원가입 성공", "성공"), response);
     }
 
-    @GetMapping("{userId}")
+    @GetMapping("/user/{userId}")
     public Api<UserResponse> getUserInfo(
             @Valid
             @PathVariable("userId") Long userId
@@ -36,7 +36,7 @@ public class UserApiController {
         return new Api<>(new Result(200, "정보 조회 성공", "성공"), userById);
     }
 
-    @PatchMapping("{userId}")
+    @PatchMapping("/user/{userId}")
     public Api<UserResponse> updateUser(
             @Valid
             @PathVariable("userId") Long userId,
