@@ -8,6 +8,8 @@ import com.example.domain.dentist.controller.model.PersonalizedDentistDTO;
 import com.example.repository.DynamicInfoRepository;
 import com.example.repository.StaticInfoRepository;
 import com.example.util.DistanceUtil;
+import error.ErrorCode;
+import exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ public class PersonalizedDentistService {
 
         // Null 체크
         if (day == null || queryTime == null || latitude == null || longitude == null) {
-            throw new IllegalArgumentException("DTO 필드 값이 null입니다.");
+            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
         }
 
         List<DynamicInfoDoc> allDentists = dynamicInfoRepository.findAll();
@@ -104,6 +106,9 @@ public class PersonalizedDentistService {
                     .longitude(staticInfo.getLon())
                     .score(dynamicInfo != null ? dynamicInfo.getScore() : null)
                     .reviewCnt(dynamicInfo != null ? dynamicInfo.getReviewCnt() : null)
+                    .subwayInfo(staticInfo.getSubwayInfo())
+                    .subwayName(staticInfo.getSubwayName())
+                    .dist(staticInfo.getDist())
                     .build();
         }).collect(Collectors.toList());
 
