@@ -41,4 +41,13 @@ public class StaticInfoDoc {
     @Field("lat")
     private Double lat;
 
+    @Field("subway_info")
+    private String subwayInfo;
+
+    @Field("subway_name")
+    private String subwayName;
+
+    @Field("dist")
+    private Integer dist;
+
 }

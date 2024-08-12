@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @RequiredArgsConstructor
@@ -30,4 +31,10 @@ public class DentistDto {
     private Double score;
 
     private Integer reviewCnt;
+
+    private String subwayInfo;
+
+    private String subwayName;
+
+    private Integer dist;
 }
