@@ -30,6 +30,8 @@ public class UserConverter {
                             .birthAt(String.valueOf(request.getBirthAt()))
                             .phoneNumber(request.getPhoneNumber())
                             .address(request.getAddress())
+                            .latitude(request.getLatitude())
+                            .longitude(request.getLongitude())
                             .build();
                 })
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT,"UserRegisterRequest is null"));

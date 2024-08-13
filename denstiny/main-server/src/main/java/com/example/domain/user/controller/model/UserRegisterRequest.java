@@ -1,5 +1,7 @@
 package com.example.domain.user.controller.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserRegisterRequest {
 
     @NotBlank
@@ -28,5 +31,9 @@ public class UserRegisterRequest {
     private String password;
     @NotBlank
     private String address;
+    @NotNull
+    private Double latitude;
+    @NotNull
+    private Double longitude;
 
 }

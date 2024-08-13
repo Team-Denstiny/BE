@@ -7,4 +7,6 @@ import lombok.Data;
 @Builder
 public class Oauth2AddressPlusDto {
     private String address;
+    private Double latitude;
+    private Double longitude;
 }
