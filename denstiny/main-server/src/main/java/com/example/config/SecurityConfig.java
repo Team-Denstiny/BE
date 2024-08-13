@@ -24,6 +24,7 @@ import com.example.jwt.JWTFilter;
 import com.example.oauth2.handler.CustomSuccessHandler;
 import com.example.oauth2.service.CustomOAuth2UserService;
 import com.example.refresh.RefreshRepository;
+import com.example.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final UserRepository userRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -80,8 +82,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/login", "/api/users/register", "/api/users/reissue", "/api/users/endpoint").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .addFilterAfter(new JWTFilter(jwtUtil,objectMapper), OAuth2LoginAuthenticationFilter.class)
-                .addFilterAfter(new AuthorizationFilter(), JWTFilter.class)
+                .addFilterAfter(new JWTFilter(jwtUtil,objectMapper,userRepository), OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(new AuthorizationFilter(objectMapper), JWTFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshRepository), LogoutFilter.class)
                 .sessionManagement((session) -> session

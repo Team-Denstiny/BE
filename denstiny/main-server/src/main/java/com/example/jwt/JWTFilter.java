@@ -32,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
-
+    private final UserRepository userRepository;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -82,9 +82,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String resourceId = jwtUtil.getResourceId(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        Long userId = userRepository.findByResourceId(resourceId).getUserId();
 
         //userEntity를 생성하여 값 set
         UserEntity userEntity = UserEntity.builder()
+                .userId(userId)
                 .resourceId(resourceId)
                 .password("temppassword")
                 .role(UserRole.valueOf(role))
