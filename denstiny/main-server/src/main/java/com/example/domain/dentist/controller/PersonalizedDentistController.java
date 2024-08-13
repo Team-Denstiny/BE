@@ -1,8 +1,10 @@
 package com.example.domain.dentist.controller;
 
+import com.example.domain.dentist.controller.model.CategoryDto;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.LocationDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentistDTO;
+import com.example.domain.dentist.service.CategoryDentistService;
 import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class PersonalizedDentistController {
 
     private final PersonalizedDentistService personalizedDentistService;
     private final OpenDentistService openDentistService;
+    private final CategoryDentistService categoryDentistService;
 
     @PostMapping("/personalDentist")
     public List<DentistDto> personalizedDenDis(
@@ -33,5 +36,12 @@ public class PersonalizedDentistController {
             @RequestBody LocationDto locationDto
     ){
         return openDentistService.openDentistNow(locationDto);
+    }
+
+    @PostMapping("/categoryDentist")
+    public List<DentistDto> categoryDentist(
+            @RequestBody CategoryDto categoryDto
+    ){
+        return categoryDentistService.categoryDentist(categoryDto);
     }
 }

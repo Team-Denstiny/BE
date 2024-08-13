@@ -31,7 +31,7 @@ public class OpenDentistService {
     private final DynamicInfoRepository dynamicInfoRepository;
 
     public List<DentistDto> openDentistNow(
-            @RequestBody LocationDto locationDto
+            LocationDto locationDto
     ) {
 
         // 위도, 경도
@@ -45,60 +45,28 @@ public class OpenDentistService {
             throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
         }
 
-        List<DynamicInfoDoc> allDentists = dynamicInfoRepository.findAll();
-        List<String> matchingDentistIds = new ArrayList<>();
-
+        // 현재 시간과 요일
         LocalTime currentTime = TimeUtil.getCurrentTime();
         String day = TimeUtil.getCurrentDayOfWeek();
 
         log.info("{}, {}", currentTime, day);
 
-        for (DynamicInfoDoc dentist : allDentists) {
+        // 현재 요일과 시간에 열린 병원만 필터링
+        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
 
-            // 해당 요일 TimeData
-            Map<String, TimeDataDoc> timeDataMap = dentist.getTimeDataMap();
-            TimeDataDoc timeData = timeDataMap.get(day);
-
-            // 만약 TimeData가 없는 병원이라면 continue
-            if (timeData == null) continue;
-
-            // description에 "정기휴무"가 포함된 경우 continue
-            if (timeData.getDescription() != null && timeData.getDescription().contains("정기휴무")) {
-                continue;
-            }
-
-            // 병원 운영시간
-            List<String> workTimes = timeData.getWork_time();
-//            if (workTimes == null || workTimes.size() < 2) continue;
-
-            String startTimeString = workTimes.get(0);
-            String endTimeString = workTimes.get(1);
-
-            if ("00:00".equals(startTimeString) && "00:00".equals(endTimeString)) continue;
-
-            // String -> LocalTime
-            LocalTime startTime = LocalTime.parse(startTimeString);
-            LocalTime endTime = LocalTime.parse(endTimeString);
-
-//            log.info("{}, {}", startTime, endTime);
-
-            // 운영 시간에 쿼리시간이 포함되면 리스트에 추가
-            if (currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
-                matchingDentistIds.add(dentist.getId());
-            }
-        }
+        List<String> matchingDentistIds = openDentists.stream()
+                .map(DynamicInfoDoc::getId)
+                .collect(Collectors.toList());
 
         // StaticInfoRepository를 이용해 matchingDentistIds로 StaticInfo 목록을 조회
         List<StaticInfoDoc> staticInfos = staticInfoRepository.findAllById(matchingDentistIds);
 
         List<DentistDto> dentistDtos = staticInfos.stream().map(staticInfo -> {
-            // 해당 StaticInfo에 맞는 DynamicInfoData를 찾음
-            DynamicInfoDoc dynamicInfo = allDentists.stream()
+            DynamicInfoDoc dynamicInfo = openDentists.stream()
                     .filter(d -> d.getId().equals(staticInfo.getId()))
                     .findFirst()
                     .orElse(null);
 
-            // DentistDto 객체 생성
             return DentistDto.builder()
                     .id(staticInfo.getId())
                     .name(staticInfo.getName())
@@ -116,8 +84,7 @@ public class OpenDentistService {
                     .build();
         }).collect(Collectors.toList());
 
-        // 현재 위치와 병원 간의 [거리를 기준]으로 병원을 정렬  -> 기본값을 거리순으로
-
+        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
         List<DentistDto> sortedHospitals = dentistDtos.stream()
                 .sorted(Comparator.comparingDouble(dto ->
                         DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
@@ -126,3 +93,100 @@ public class OpenDentistService {
         return sortedHospitals;
     }
 }
+
+//    public List<DentistDto> openDentistNow(
+//            @RequestBody LocationDto locationDto
+//    ) {
+//
+//        // 위도, 경도
+//        Double latitude = locationDto.getLatitude();
+//        Double longitude = locationDto.getLongitude();
+//
+//        log.info("{}, {}", latitude, longitude);
+//
+//        // Null 체크
+//        if (latitude == null || longitude == null) {
+//            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
+//        }
+//
+//        List<DynamicInfoDoc> allDentists = dynamicInfoRepository.findAll();
+//        List<String> matchingDentistIds = new ArrayList<>();
+//
+//        LocalTime currentTime = TimeUtil.getCurrentTime();
+//        String day = TimeUtil.getCurrentDayOfWeek();
+//
+//        log.info("{}, {}", currentTime, day);
+//
+//        for (DynamicInfoDoc dentist : allDentists) {
+//
+//            // 해당 요일 TimeData
+//            Map<String, TimeDataDoc> timeDataMap = dentist.getTimeDataMap();
+//            TimeDataDoc timeData = timeDataMap.get(day);
+//
+//            // 만약 TimeData가 없는 병원이라면 continue
+//            if (timeData == null) continue;
+//
+//            // description에 "정기휴무"가 포함된 경우 continue
+//            if (timeData.getDescription() != null && timeData.getDescription().contains("정기휴무")) {
+//                continue;
+//            }
+//
+//            // 병원 운영시간
+//            List<String> workTimes = timeData.getWork_time();
+////            if (workTimes == null || workTimes.size() < 2) continue;
+//
+//            String startTimeString = workTimes.get(0);
+//            String endTimeString = workTimes.get(1);
+//
+//            if ("00:00".equals(startTimeString) && "00:00".equals(endTimeString)) continue;
+//
+//            // String -> LocalTime
+//            LocalTime startTime = LocalTime.parse(startTimeString);
+//            LocalTime endTime = LocalTime.parse(endTimeString);
+//
+////            log.info("{}, {}", startTime, endTime);
+//
+//            // 운영 시간에 쿼리시간이 포함되면 리스트에 추가
+//            if (currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
+//                matchingDentistIds.add(dentist.getId());
+//            }
+//        }
+//
+//        // StaticInfoRepository를 이용해 matchingDentistIds로 StaticInfo 목록을 조회
+//        List<StaticInfoDoc> staticInfos = staticInfoRepository.findAllById(matchingDentistIds);
+//
+//        List<DentistDto> dentistDtos = staticInfos.stream().map(staticInfo -> {
+//            // 해당 StaticInfo에 맞는 DynamicInfoData를 찾음
+//            DynamicInfoDoc dynamicInfo = allDentists.stream()
+//                    .filter(d -> d.getId().equals(staticInfo.getId()))
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            // DentistDto 객체 생성
+//            return DentistDto.builder()
+//                    .id(staticInfo.getId())
+//                    .name(staticInfo.getName())
+//                    .addr(staticInfo.getAddr())
+//                    .dong(staticInfo.getDong())
+//                    .tele(staticInfo.getTele())
+//                    .img(staticInfo.getImg())
+//                    .latitude(staticInfo.getLat())
+//                    .longitude(staticInfo.getLon())
+//                    .score(dynamicInfo != null ? dynamicInfo.getScore() : null)
+//                    .reviewCnt(dynamicInfo != null ? dynamicInfo.getReviewCnt() : null)
+//                    .subwayInfo(staticInfo.getSubwayInfo())
+//                    .subwayName(staticInfo.getSubwayName())
+//                    .dist(staticInfo.getDist())
+//                    .build();
+//        }).collect(Collectors.toList());
+//
+//        // 현재 위치와 병원 간의 [거리를 기준]으로 병원을 정렬  -> 기본값을 거리순으로
+//
+//        List<DentistDto> sortedHospitals = dentistDtos.stream()
+//                .sorted(Comparator.comparingDouble(dto ->
+//                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
+//                .collect(Collectors.toList());
+//
+//        return sortedHospitals;
+//    }
+//}
