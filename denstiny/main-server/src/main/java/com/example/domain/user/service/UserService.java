@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,17 +26,21 @@ public class UserService {
      * 1. 일반 회원 가입시 주소를 입력하는 경우 사용하는 메서드
      * email, nickName의 중복을 검사 후 -> ROLE을 MEMBER로 부여 후 저장
      */
-    public UserEntity register(UserEntity memberEntity) {
-        if (isDuplicateEmail(memberEntity.getEmail())) {
+    public UserEntity register(UserEntity userEntity) {
+        if (isDuplicateEmail(userEntity.getEmail())) {
             throw new ApiException(UserErrorCode.DUPLICATE_EMAIL, "회원 가입시 Email 중복");
         }
-        if (isDuplicateNickname(memberEntity.getNickName())) {
+        if (isDuplicateNickname(userEntity.getNickName())) {
             throw new ApiException(UserErrorCode.DUPLICATE_NICKNAME, "회원 가입시 nickName 중복");
         }
-        return Optional.ofNullable(memberEntity)
+        String uuid = UUID.randomUUID().toString();
+
+        return Optional.ofNullable(userEntity)
                 .map(it -> {
-                    memberEntity.setRole(UserRole.ROLE_MEMBER);
-                    return userRepository.save(memberEntity);
+                    userEntity.setRole(UserRole.ROLE_MEMBER);
+                    userEntity.setResourceId(uuid);
+                    userEntity.setResourceName("denstiny");
+                    return userRepository.save(userEntity);
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "User Entity Null"));
     }
 

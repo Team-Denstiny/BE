@@ -11,18 +11,17 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
-import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ReissueController {
@@ -31,7 +30,7 @@ public class ReissueController {
     private final ReissueService reissueService;
     private final RefreshRepository refreshRepository;
 
-    @PostMapping("/open-api/users/reissue")
+    @PostMapping("/api/users/reissue")
     public Api<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = reissueService.getRefreshToken(request);
@@ -58,24 +57,25 @@ public class ReissueController {
         // TODO Redis로 변경된다면 수정되어야 하는 부분
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        if (isExist){
+        log.info("Exist? : {}",isExist);
+        if (!isExist){
             Result result = new Result(400, "invalid refresh token", "실패");
             return new Api<>(result, null);
         }
 
-        String email = jwtUtil.getEmail(refresh);
+        String resourceId = jwtUtil.getResourceId(refresh);
         String role = jwtUtil.getRole(refresh);
 
         // 새로운 JWT 생성
-        String newAccess = jwtUtil.createJwt("access", email, role, 600000L);
+        String newAccess = jwtUtil.createJwt("access", resourceId, role, 600000L);
         // Refresh Token Rotate 기능 추가
-        String newRefresh = jwtUtil.createJwt("refresh", email, role, 86400000L);
+        String newRefresh = jwtUtil.createJwt("refresh", resourceId, role, 86400000L);
 
         // Refresh Rotate 하는 부분
         // TODO : Redis로 변경시  수정해야 하는 부분
 
         refreshRepository.deleteByRefresh(refresh);
-        addRefreshEntity(email, newRefresh, 96400000L);
+        addRefreshEntity(resourceId, newRefresh, 96400000L);
 
         // 응답 헤더 설정
         response.setStatus(HttpStatus.OK.value());
@@ -97,12 +97,12 @@ public class ReissueController {
 
         return cookie;
     }
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
+    private void addRefreshEntity(String resourceId, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         RefreshEntity refreshEntity = RefreshEntity.builder()
-                .email(email)
+                .resourceId(resourceId)
                 .refresh(refresh)
                 .expiration(date.toString())
                 .build();

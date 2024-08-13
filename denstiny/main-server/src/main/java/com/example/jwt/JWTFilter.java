@@ -4,6 +4,7 @@ import api.Result;
 import com.example.domain.user.controller.model.CustomUserDetails;
 import com.example.error.TokenErrorCode;
 import com.example.user.UserEntity;
+import com.example.user.UserRepository;
 import com.example.user.enums.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -22,14 +23,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    public final static String HEADER_AUTHORIZATION = "Authorization";
-    public final static String TOKEN_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -78,16 +80,17 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        //토큰에서 username과 role 획득
-        String email = jwtUtil.getEmail(accessToken);
+        String resourceId = jwtUtil.getResourceId(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
         //userEntity를 생성하여 값 set
         UserEntity userEntity = UserEntity.builder()
-                .email(email)
+                .resourceId(resourceId)
                 .password("temppassword")
                 .role(UserRole.valueOf(role))
                 .build();
+
+        log.info("UserEntity: {}",userEntity);
 
         //UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);

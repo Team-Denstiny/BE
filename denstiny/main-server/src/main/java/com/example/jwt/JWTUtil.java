@@ -9,7 +9,11 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import lombok.extern.slf4j.Slf4j;
+
+
 @Component
+@Slf4j
 public class JWTUtil {
 
     private SecretKey secretKey;
@@ -25,26 +29,27 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    public String getEmail(String token){
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
+    public String getResourceId(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("resourceId", String.class);
     }
     public String getRole(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
     public Boolean isExpired(String token){
+        log.info("front={}\n back={}", Jwts.parser().verifyWith(secretKey).build(),token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
     /**
      * 토큰 생성 메서드
-     * @param email
+     * @param resourceId
      * @param role
      * @param expiredMs
      */
 
-    public String createJwt(String category,String email, String role, Long expiredMs){
+    public String createJwt(String category,String resourceId, String role, Long expiredMs){
         return Jwts.builder()
-                .claim("email", email)
+                .claim("resourceId", resourceId)
                 .claim("role", role)
                 .claim("category",category)
                 .issuedAt(new Date(System.currentTimeMillis()))

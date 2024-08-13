@@ -1,13 +1,13 @@
 package com.example.refresh;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Data
 @Table(name = "refresh")
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class RefreshEntity {
 
@@ -15,7 +15,7 @@ public class RefreshEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
+    private String resourceId;
 
     private String refresh;
 

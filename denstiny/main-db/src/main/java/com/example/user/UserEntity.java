@@ -40,6 +40,9 @@ public class UserEntity {
 
     private String address;
 
+    @Column(name = "resource_id")
+    private String resourceId;
+
     @Column(name = "resource_name")
     private String resourceName;
 

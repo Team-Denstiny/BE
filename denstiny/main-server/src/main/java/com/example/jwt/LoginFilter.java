@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import static com.example.jwt.JWTFilter.HEADER_AUTHORIZATION;
-import static com.example.jwt.JWTFilter.TOKEN_PREFIX;
+import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -79,6 +79,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getUserId();
+        String resourceId = userDetails.getResourceId();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -86,12 +87,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         //토큰 생성
-        String access = jwtUtil.createJwt("access", email, role, 600000L);
-        String refresh = jwtUtil.createJwt("refresh", email,role,86400000L );
+        String access = jwtUtil.createJwt("access", resourceId, role, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", resourceId,role,86400000L );
 
         // refreshToken RDB에 저장
         // TODO RDB <--> REDIS
-        addRefreshEntity(email, refresh,86400000L);
+        addRefreshEntity(resourceId, refresh,86400000L);
 
         // 헤더와 쿠키 설정
         response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + access);
@@ -152,12 +153,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("로그인에 실패하였습니다");
     }
 
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
+    private void addRefreshEntity(String resourceId, String refresh, Long expiredMs) {
 
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
         RefreshEntity refreshEntity = RefreshEntity.builder()
-                .email(email)
+                .resourceId(resourceId)
                 .refresh(refresh)
                 .expiration(date.toString())
                 .build();

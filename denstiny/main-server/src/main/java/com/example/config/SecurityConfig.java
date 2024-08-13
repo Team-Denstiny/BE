@@ -1,15 +1,7 @@
 package com.example.config;
 
-import com.example.jwt.CustomLogoutFilter;
-import com.example.jwt.JWTFilter;
-import com.example.jwt.JWTUtil;
-import com.example.jwt.LoginFilter;
-import com.example.oauth2.handler.CustomSuccessHandler;
-import com.example.oauth2.service.CustomOAuth2UserService;
-import com.example.refresh.RefreshRepository;
-import com.example.user.enums.UserRole;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,8 +16,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import com.example.jwt.AuthorizationFilter;
+import com.example.jwt.CustomLogoutFilter;
+import com.example.jwt.JWTUtil;
+import com.example.jwt.LoginFilter;
+import com.example.jwt.JWTFilter;
+import com.example.oauth2.handler.CustomSuccessHandler;
+import com.example.oauth2.service.CustomOAuth2UserService;
+import com.example.refresh.RefreshRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+
 
 
 @Configuration
@@ -75,10 +77,11 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue").permitAll()
+                        .requestMatchers("/api/users/login", "/api/users/register", "/api/users/reissue", "/api/users/endpoint").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTFilter(jwtUtil,objectMapper), OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(new AuthorizationFilter(), JWTFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil,refreshRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil,refreshRepository), LogoutFilter.class)
                 .sessionManagement((session) -> session
