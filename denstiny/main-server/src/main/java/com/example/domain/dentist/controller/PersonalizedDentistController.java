@@ -32,11 +32,18 @@ public class PersonalizedDentistController {
         return personalizedDentistService.personalizedDentistByDisSaved(personalizedDentDto,token);
     }
 
-    @PostMapping("/openDentist")
+    @PostMapping("/open-dentist/address")
     public List<DentistDto> openDentist(
             @RequestBody LocationDto locationDto
     ){
         return openDentistService.openDentistNow(locationDto);
+    }
+
+    @GetMapping("/open-dentist/saved")
+    public List<DentistDto> openDentistSaved(
+            @RequestHeader("Authorization") String token
+    ){
+        return openDentistService.openDentistNowSaved(token);
     }
 
     @PostMapping("/categoryDentist")
