@@ -13,8 +13,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/guest/find")
-public class GuestDentistController {
+@RequestMapping("/api/public/find")
+public class PublicDentistController {
 
     private final PersonalizedDentistService personalizedDentistService;
     private final OpenDentistService openDentistService;

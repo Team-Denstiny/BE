@@ -74,7 +74,7 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/guest/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())

@@ -3,6 +3,7 @@ package com.example.domain.dentist.converter;
 import annotation.Converter;
 import com.example.document.DynamicInfoDoc;
 import com.example.document.StaticInfoDoc;
+import com.example.domain.dentist.controller.model.DentistDetail;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.repository.StaticInfoRepository;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,24 @@ public class DentistConverter {
         }).collect(Collectors.toList());
         return dentistDtos;
 
+    }
+    public DentistDetail toDentistDto(DynamicInfoDoc dynamicInfo, StaticInfoDoc staticInfo){
+        return DentistDetail.builder()
+                .id(staticInfo.getId())
+                .name(staticInfo.getName())
+                .addr(staticInfo.getAddr())
+                .dong(staticInfo.getDong())
+                .tele(staticInfo.getTele())
+                .img(staticInfo.getImg())
+                .latitude(staticInfo.getLat())
+                .longitude(staticInfo.getLon())
+                .timeDataMap(dynamicInfo.getTimeDataMap())
+                .category(dynamicInfo.getCategory())
+                .score(dynamicInfo != null ? dynamicInfo.getScore() : null)
+                .reviewCnt(dynamicInfo != null ? dynamicInfo.getReviewCnt() : null)
+                .subwayInfo(staticInfo.getSubwayInfo())
+                .subwayName(staticInfo.getSubwayName())
+                .dist(staticInfo.getDist())
+                .build();
     }
 }

@@ -18,13 +18,8 @@ public class LoginDentistController {
     private final OpenDentistService openDentistService;
     private final CategoryDentistService categoryDentistService;
 
-    @PostMapping("/dentist/address")
-    public List<DentistDto> personalizedDenDis(
-            @RequestBody PersonalizedDentLocDto personalizedDentLocDto
-    ){
-        return personalizedDentistService.personalizedDentistByDis(personalizedDentLocDto);
-    }
-    @PostMapping("/dentist/saved")
+
+    @PostMapping("/dentist")
     public List<DentistDto> personalizedDenDisSaved(
             @RequestBody PersonalizedDentDto personalizedDentDto,
             @RequestHeader("Authorization") String token
@@ -32,27 +27,14 @@ public class LoginDentistController {
         return personalizedDentistService.personalizedDentistByDisSaved(personalizedDentDto,token);
     }
 
-    @PostMapping("/open-dentist/address")
-    public List<DentistDto> openDentist(
-            @RequestBody LocationDto locationDto
-    ){
-        return openDentistService.openDentistNow(locationDto);
-    }
-
-    @GetMapping("/open-dentist/saved")
+    @GetMapping("/open-dentist")
     public List<DentistDto> openDentistSaved(
             @RequestHeader("Authorization") String token
     ){
         return openDentistService.openDentistNowSaved(token);
     }
 
-    @PostMapping("/cat-dentist/address")
-    public List<DentistDto> categoryDentist(
-            @RequestBody CategoryLocDto categoryLocDto
-    ){
-        return categoryDentistService.categoryDentist(categoryLocDto);
-    }
-    @PostMapping("/cat-dentist/saved")
+    @PostMapping("/cat-dentist")
     public List<DentistDto> categoryDentistSaved(
             @RequestBody CategoryDto categoryDto,
             @RequestHeader("Authorization") String token
