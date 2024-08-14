@@ -5,6 +5,7 @@ import com.example.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
+import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
 import com.example.repository.DynamicInfoRepository;
 import com.example.repository.StaticInfoRepository;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PersonalizedDentistService {
 
-    private final StaticInfoRepository staticInfoRepository;
     private final DynamicInfoRepository dynamicInfoRepository;
+    private final DentistConverter dentistConverter;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
@@ -51,7 +52,9 @@ public class PersonalizedDentistService {
 
         String queryTimeStr = queryTime.toString();
 
-        List<DentistDto> dentistDtos = getDentistDtos(day, queryTimeStr);
+        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
+        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
+
 
         // 거리 기준으로 병원 정렬
         List<DentistDto> sortedHospitals = dentistDtos.stream()
@@ -85,7 +88,10 @@ public class PersonalizedDentistService {
         UserEntity user = userRepository.findByResourceId(resourceId);
 
         String queryTimeStr = queryTime.toString();
-        List<DentistDto> dentistDtos = getDentistDtos(day, queryTimeStr);
+
+        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
+        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
+
 
         Double latitude = user.getLatitude();
         Double longitude = user.getLongitude();
@@ -98,44 +104,6 @@ public class PersonalizedDentistService {
                 .collect(Collectors.toList());
 
         return sortedHospitals;
-    }
-
-
-    private List<DentistDto> getDentistDtos(String day, String queryTimeStr) {
-        // DynamicInfoRepository의 수정된 쿼리 메서드 호출
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
-
-        List<String> matchingDentistIds = openDentists.stream()
-                .map(DynamicInfoDoc::getId)
-                .collect(Collectors.toList());
-
-        // StaticInfoDoc 리스트 가져오기
-        List<StaticInfoDoc> staticInfos = staticInfoRepository.findAllById(matchingDentistIds);
-
-        // DentistDto 변환 및 매핑
-        List<DentistDto> dentistDtos = staticInfos.stream().map(staticInfo -> {
-            DynamicInfoDoc dynamicInfo = openDentists.stream()
-                    .filter(d -> d.getId().equals(staticInfo.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            return DentistDto.builder()
-                    .id(staticInfo.getId())
-                    .name(staticInfo.getName())
-                    .addr(staticInfo.getAddr())
-                    .dong(staticInfo.getDong())
-                    .tele(staticInfo.getTele())
-                    .img(staticInfo.getImg())
-                    .latitude(staticInfo.getLat())
-                    .longitude(staticInfo.getLon())
-                    .score(dynamicInfo != null ? dynamicInfo.getScore() : null)
-                    .reviewCnt(dynamicInfo != null ? dynamicInfo.getReviewCnt() : null)
-                    .subwayInfo(staticInfo.getSubwayInfo())
-                    .subwayName(staticInfo.getSubwayName())
-                    .dist(staticInfo.getDist())
-                    .build();
-        }).collect(Collectors.toList());
-        return dentistDtos;
     }
 }
 

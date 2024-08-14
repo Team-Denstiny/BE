@@ -1,5 +1,9 @@
-package com.example.domain.dentist.controller.model;
+package com.example.domain.dentist.controller;
 
+import com.example.domain.dentist.controller.model.CategoryLocDto;
+import com.example.domain.dentist.controller.model.DentistDto;
+import com.example.domain.dentist.controller.model.LocationDto;
+import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
 import com.example.domain.dentist.service.CategoryDentistService;
 import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.dentist.service.PersonalizedDentistService;

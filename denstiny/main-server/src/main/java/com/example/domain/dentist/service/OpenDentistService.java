@@ -5,6 +5,7 @@ import com.example.document.StaticInfoDoc;
 import com.example.document.TimeDataDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.LocationDto;
+import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
 import com.example.repository.DynamicInfoRepository;
 import com.example.repository.StaticInfoRepository;
@@ -30,9 +31,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OpenDentistService {
-    private final StaticInfoRepository staticInfoRepository;
     private final DynamicInfoRepository dynamicInfoRepository;
     private final UserRepository userRepository;
+    private final DentistConverter dentistConverter;
     private final JWTUtil jwtUtil;
 
     public List<DentistDto> openDentistNow(
@@ -56,7 +57,11 @@ public class OpenDentistService {
 
         log.info("{}, {}", currentTime, day);
 
-        List<DentistDto> dentistDtos = getDentistDtos(day, currentTime);
+        // 현재 요일과 시간에 열린 병원만 필터링
+        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
+
+        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
+
 
         // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
         List<DentistDto> sortedHospitals = dentistDtos.stream()
@@ -84,7 +89,10 @@ public class OpenDentistService {
         Double longitude = user.getLongitude();
         log.info("{}, {}", latitude, longitude);
 
-        List<DentistDto> dentistDtos = getDentistDtos(day, currentTime);
+        // 현재 요일과 시간에 열린 병원만 필터링
+        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
+
+        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
         // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
         List<DentistDto> sortedHospitals = dentistDtos.stream()
@@ -94,42 +102,6 @@ public class OpenDentistService {
 
         return sortedHospitals;
 
-    }
-
-    private List<DentistDto> getDentistDtos(String day, LocalTime currentTime) {
-        // 현재 요일과 시간에 열린 병원만 필터링
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
-
-        List<String> matchingDentistIds = openDentists.stream()
-                .map(DynamicInfoDoc::getId)
-                .collect(Collectors.toList());
-
-        // StaticInfoRepository를 이용해 matchingDentistIds로 StaticInfo 목록을 조회
-        List<StaticInfoDoc> staticInfos = staticInfoRepository.findAllById(matchingDentistIds);
-
-        List<DentistDto> dentistDtos = staticInfos.stream().map(staticInfo -> {
-            DynamicInfoDoc dynamicInfo = openDentists.stream()
-                    .filter(d -> d.getId().equals(staticInfo.getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            return DentistDto.builder()
-                    .id(staticInfo.getId())
-                    .name(staticInfo.getName())
-                    .addr(staticInfo.getAddr())
-                    .dong(staticInfo.getDong())
-                    .tele(staticInfo.getTele())
-                    .img(staticInfo.getImg())
-                    .latitude(staticInfo.getLat())
-                    .longitude(staticInfo.getLon())
-                    .score(dynamicInfo != null ? dynamicInfo.getScore() : null)
-                    .reviewCnt(dynamicInfo != null ? dynamicInfo.getReviewCnt() : null)
-                    .subwayInfo(staticInfo.getSubwayInfo())
-                    .subwayName(staticInfo.getSubwayName())
-                    .dist(staticInfo.getDist())
-                    .build();
-        }).collect(Collectors.toList());
-        return dentistDtos;
     }
 }
 
