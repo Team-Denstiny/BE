@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/find")
-public class PersonalizedDentistController {
+public class LoginDentistController {
 
     private final PersonalizedDentistService personalizedDentistService;
     private final OpenDentistService openDentistService;
