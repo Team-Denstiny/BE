@@ -47,4 +47,11 @@ public class PublicDentistController {
         DentistDetail dentist = dentistService.findDentist(id);
         return ResponseEntity.ok(dentist);
     }
+
+    // 병원 이름으로 검색
+    @GetMapping("/by-name")
+    public ResponseEntity<List<DentistDto>> getDentistsByName(@RequestBody SearchNameDto searchNameDto) {
+        List<DentistDto> dentists = dentistService.findDentistByName(searchNameDto);
+        return ResponseEntity.ok(dentists);
+    }
 }
