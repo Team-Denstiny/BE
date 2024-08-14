@@ -1,13 +1,12 @@
 package com.example.domain.dentist.controller;
 
-import com.example.domain.dentist.controller.model.CategoryLocDto;
-import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.domain.dentist.controller.model.LocationDto;
-import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
+import com.example.domain.dentist.controller.model.*;
 import com.example.domain.dentist.service.CategoryDentistService;
+import com.example.domain.dentist.service.DentistService;
 import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +19,7 @@ public class GuestDentistController {
     private final PersonalizedDentistService personalizedDentistService;
     private final OpenDentistService openDentistService;
     private final CategoryDentistService categoryDentistService;
+    private final DentistService dentistService;
 
     @PostMapping("/dentist")
     public List<DentistDto> personalizedDenDis(
@@ -40,5 +40,11 @@ public class GuestDentistController {
             @RequestBody CategoryLocDto categoryLocDto
     ){
         return categoryDentistService.categoryDentist(categoryLocDto);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DentistDetail> getDentistById(@PathVariable("id") String id) {
+        DentistDetail dentist = dentistService.findDentist(id);
+        return ResponseEntity.ok(dentist);
     }
 }
