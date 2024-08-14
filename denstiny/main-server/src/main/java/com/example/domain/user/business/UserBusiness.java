@@ -12,6 +12,8 @@ import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Business
@@ -39,6 +41,20 @@ public class UserBusiness {
     public UserResponse updateUser(Long id, UserUpdateRequest request){
         UserEntity userEntity = userService.updateUser(id, request);
         UserResponse response = userConverter.toResponse(userEntity);
+        return response;
+    }
+
+    public Map<String,Boolean> checkNickName(String nickname){
+        boolean isDuplicate = userService.isDuplicateNickname(nickname);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
+        return response;
+    }
+
+    public Map<String,Boolean> checkEmail(String email){
+        boolean isDuplicate = userService.isDuplicateNickname(email);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
         return response;
     }
 

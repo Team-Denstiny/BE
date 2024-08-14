@@ -44,11 +44,11 @@ public class UserService {
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "User Entity Null"));
     }
 
-    private boolean isDuplicateEmail(String email) {
+    public boolean isDuplicateEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    private boolean isDuplicateNickname(String nickName) {
+    public boolean isDuplicateNickname(String nickName) {
         return userRepository.findByNickName(nickName).isPresent();
     }
 
