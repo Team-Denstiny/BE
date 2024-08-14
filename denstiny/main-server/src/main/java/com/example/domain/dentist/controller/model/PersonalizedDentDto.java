@@ -10,10 +10,8 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonalizedDentistDTO {
+public class PersonalizedDentDto {
     private String day;
     @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalTime localTime;
-    private Double latitude;
-    private Double longitude;
 }

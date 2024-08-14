@@ -1,17 +1,11 @@
 package com.example.domain.dentist.controller;
 
-import com.example.domain.dentist.controller.model.CategoryDto;
-import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.domain.dentist.controller.model.LocationDto;
-import com.example.domain.dentist.controller.model.PersonalizedDentistDTO;
+import com.example.domain.dentist.controller.model.*;
 import com.example.domain.dentist.service.CategoryDentistService;
 import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,11 +18,18 @@ public class PersonalizedDentistController {
     private final OpenDentistService openDentistService;
     private final CategoryDentistService categoryDentistService;
 
-    @PostMapping("/personalDentist")
+    @PostMapping("/dentist/address")
     public List<DentistDto> personalizedDenDis(
-            @RequestBody PersonalizedDentistDTO personalizedDentistDTO
+            @RequestBody PersonalizedDentLocDto personalizedDentLocDto
     ){
-        return personalizedDentistService.personalizedDentistByDis(personalizedDentistDTO);
+        return personalizedDentistService.personalizedDentistByDis(personalizedDentLocDto);
+    }
+    @PostMapping("/dentist/saved")
+    public List<DentistDto> personalizedDenDisSaved(
+            @RequestBody PersonalizedDentDto personalizedDentDto,
+            @RequestHeader("Authorization") String token
+    ){
+        return personalizedDentistService.personalizedDentistByDisSaved(personalizedDentDto,token);
     }
 
     @PostMapping("/openDentist")
