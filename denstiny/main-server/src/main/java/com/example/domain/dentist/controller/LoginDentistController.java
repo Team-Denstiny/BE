@@ -27,7 +27,7 @@ public class LoginDentistController {
         return personalizedDentistService.personalizedDentistByDisSaved(personalizedDentDto,token);
     }
 
-    @GetMapping("/open-dentist")
+    @PostMapping("/open-dentist")
     public List<DentistDto> openDentistSaved(
             @RequestHeader("Authorization") String token
     ){

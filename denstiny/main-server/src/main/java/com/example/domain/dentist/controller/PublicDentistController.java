@@ -49,7 +49,7 @@ public class PublicDentistController {
     }
 
     // 병원 이름으로 검색
-    @GetMapping("/by-name")
+    @PostMapping("/by-name")
     public ResponseEntity<List<DentistDto>> getDentistsByName(@RequestBody SearchNameDto searchNameDto) {
         List<DentistDto> dentists = dentistService.findDentistByName(searchNameDto);
         return ResponseEntity.ok(dentists);
