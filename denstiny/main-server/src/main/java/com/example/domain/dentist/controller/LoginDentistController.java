@@ -5,8 +5,10 @@ import com.example.domain.dentist.service.CategoryDentistService;
 import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -19,26 +21,33 @@ public class LoginDentistController {
     private final CategoryDentistService categoryDentistService;
 
 
-    @PostMapping("/dentist")
-    public List<DentistDto> personalizedDenDisSaved(
-            @RequestBody PersonalizedDentDto personalizedDentDto,
+    @GetMapping("/dentist")
+    public ResponseEntity<List<DentistDto>> personalizedDenDisSaved(
+            @RequestParam("day") String day,
+            @RequestParam("local_time") String local_time,
             @RequestHeader("Authorization") String token
-    ){
-        return personalizedDentistService.personalizedDentistByDisSaved(personalizedDentDto,token);
+    ) {
+        LocalTime queryTime = LocalTime.parse(local_time);
+        PersonalizedDentDto personalizedDentistDto = new PersonalizedDentDto(day, queryTime);
+
+        List<DentistDto> dentists = personalizedDentistService.personalizedDentistByDisSaved(personalizedDentistDto, token);
+        return ResponseEntity.ok(dentists);
     }
 
-    @PostMapping("/open-dentist")
+    @GetMapping("/open-dentist")
     public List<DentistDto> openDentistSaved(
             @RequestHeader("Authorization") String token
     ){
         return openDentistService.openDentistNowSaved(token);
     }
 
-    @PostMapping("/cat-dentist")
-    public List<DentistDto> categoryDentistSaved(
-            @RequestBody CategoryDto categoryDto,
+    @GetMapping("/cat-dentist")
+    public ResponseEntity<List<DentistDto>> categoryDentistSaved(
+            @RequestParam("category") String category,
             @RequestHeader("Authorization") String token
-    ){
-        return categoryDentistService.categoryDentistSaved(categoryDto,token);
+    ) {
+        CategoryDto categoryDto = new CategoryDto(category);
+        List<DentistDto> dentists = categoryDentistService.categoryDentistSaved(categoryDto, token);
+        return ResponseEntity.ok(dentists);
     }
 }

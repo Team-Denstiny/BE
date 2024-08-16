@@ -1,14 +1,12 @@
 package com.example.domain.dentist.service;
 
 import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
 import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
 import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
@@ -17,6 +15,7 @@ import exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.Comparator;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 @AllArgsConstructor
 public class PersonalizedDentistService {
 

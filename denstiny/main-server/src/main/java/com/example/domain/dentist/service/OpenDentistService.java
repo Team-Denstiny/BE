@@ -1,14 +1,11 @@
 package com.example.domain.dentist.service;
 
 import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
-import com.example.document.TimeDataDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.LocationDto;
 import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
 import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
@@ -18,17 +15,16 @@ import exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OpenDentistService {
     private final DynamicInfoRepository dynamicInfoRepository;
@@ -71,8 +67,6 @@ public class OpenDentistService {
 
         return sortedHospitals;
     }
-
-
 
     public List<DentistDto> openDentistNowSaved(String token){
         // 현재 시간과 요일

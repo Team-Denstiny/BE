@@ -1,14 +1,12 @@
 package com.example.domain.dentist.service;
 
 import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.CategoryDto;
 import com.example.domain.dentist.controller.model.CategoryLocDto;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
 import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
@@ -18,14 +16,15 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CategoryDentistService {
 
