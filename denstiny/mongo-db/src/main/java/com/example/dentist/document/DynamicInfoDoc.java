@@ -1,4 +1,4 @@
-package com.example.document;
+package com.example.dentist.document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class DynamicInfoDoc {
     private Integer reviewCnt;
 
     @Field("timeInfo")
-    private Map<String, TimeDataDoc> timeDataMap;
+    private Map<String, TimeData> timeDataMap;
 
     @Field("treat_cate")
     private List<String> category;

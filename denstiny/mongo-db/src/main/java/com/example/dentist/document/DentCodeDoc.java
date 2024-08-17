@@ -1,4 +1,4 @@
-package com.example.document;
+package com.example.dentist.document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
