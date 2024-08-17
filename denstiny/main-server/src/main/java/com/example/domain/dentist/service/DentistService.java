@@ -1,13 +1,13 @@
 package com.example.domain.dentist.service;
 
-import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
+import com.example.dentist.document.DynamicInfoDoc;
+import com.example.dentist.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDetail;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.SearchNameDto;
 import com.example.domain.dentist.converter.DentistConverter;
-import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
+import com.example.dentist.repository.DynamicInfoRepository;
+import com.example.dentist.repository.StaticInfoRepository;
 import com.example.util.DistanceUtil;
 import error.ErrorCode;
 import exception.ApiException;

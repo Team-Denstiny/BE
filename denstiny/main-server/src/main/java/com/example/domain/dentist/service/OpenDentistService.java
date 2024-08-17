@@ -1,11 +1,11 @@
 package com.example.domain.dentist.service;
 
-import com.example.document.DynamicInfoDoc;
+import com.example.dentist.document.DynamicInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.LocationDto;
 import com.example.domain.dentist.converter.DentistConverter;
 import com.example.jwt.JWTUtil;
-import com.example.repository.DynamicInfoRepository;
+import com.example.dentist.repository.DynamicInfoRepository;
 import com.example.user.UserEntity;
 import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
