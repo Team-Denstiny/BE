@@ -1,11 +1,11 @@
 package com.example.domain.dentist.converter;
 
 import annotation.Converter;
-import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
+import com.example.dentist.document.DynamicInfoDoc;
+import com.example.dentist.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDetail;
 import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.repository.StaticInfoRepository;
+import com.example.dentist.repository.StaticInfoRepository;
 import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;

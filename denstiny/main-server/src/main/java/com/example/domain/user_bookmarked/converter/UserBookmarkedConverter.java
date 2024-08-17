@@ -1,11 +1,11 @@
 package com.example.domain.user_bookmarked.converter;
 
 import annotation.Converter;
-import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
+import com.example.dentist.document.DynamicInfoDoc;
+import com.example.dentist.document.StaticInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
+import com.example.dentist.repository.DynamicInfoRepository;
+import com.example.dentist.repository.StaticInfoRepository;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.RequiredArgsConstructor;
