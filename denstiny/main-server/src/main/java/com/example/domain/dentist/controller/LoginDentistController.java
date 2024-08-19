@@ -1,9 +1,9 @@
 package com.example.domain.dentist.controller;
 
+import com.example.domain.dentist.business.CategoryDentistBusiness;
+import com.example.domain.dentist.business.OpenDentistBusiness;
+import com.example.domain.dentist.business.PersonalizedDentistBusiness;
 import com.example.domain.dentist.controller.model.*;
-import com.example.domain.dentist.service.CategoryDentistService;
-import com.example.domain.dentist.service.OpenDentistService;
-import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,9 @@ import java.util.List;
 @RequestMapping("/api/find")
 public class LoginDentistController {
 
-    private final PersonalizedDentistService personalizedDentistService;
-    private final OpenDentistService openDentistService;
-    private final CategoryDentistService categoryDentistService;
+    private final PersonalizedDentistBusiness personalizedDentistBusiness;
+    private final OpenDentistBusiness openDentistBusiness;
+    private final CategoryDentistBusiness categoryDentistBusiness;
 
 
     @GetMapping("/dentist")
@@ -30,7 +30,7 @@ public class LoginDentistController {
         LocalTime queryTime = LocalTime.parse(local_time);
         PersonalizedDentDto personalizedDentistDto = new PersonalizedDentDto(day, queryTime);
 
-        List<DentistDto> dentists = personalizedDentistService.personalizedDentistByDisSaved(personalizedDentistDto, token);
+        List<DentistDto> dentists = personalizedDentistBusiness.personalizedDentistBySavedDis(personalizedDentistDto, token);
         return ResponseEntity.ok(dentists);
     }
 
@@ -38,7 +38,7 @@ public class LoginDentistController {
     public List<DentistDto> openDentistSaved(
             @RequestHeader("Authorization") String token
     ){
-        return openDentistService.openDentistNowSaved(token);
+        return openDentistBusiness.openDentistSavedNow(token);
     }
 
     @GetMapping("/cat-dentist")
@@ -47,7 +47,7 @@ public class LoginDentistController {
             @RequestHeader("Authorization") String token
     ) {
         CategoryDto categoryDto = new CategoryDto(category);
-        List<DentistDto> dentists = categoryDentistService.categoryDentistSaved(categoryDto, token);
+        List<DentistDto> dentists = categoryDentistBusiness.categoryDentistSaved(categoryDto, token);
         return ResponseEntity.ok(dentists);
     }
 }

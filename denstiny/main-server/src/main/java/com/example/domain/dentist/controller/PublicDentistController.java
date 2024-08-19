@@ -1,10 +1,10 @@
 package com.example.domain.dentist.controller;
 
+import com.example.domain.dentist.business.CategoryDentistBusiness;
+import com.example.domain.dentist.business.DentistBusiness;
+import com.example.domain.dentist.business.OpenDentistBusiness;
+import com.example.domain.dentist.business.PersonalizedDentistBusiness;
 import com.example.domain.dentist.controller.model.*;
-import com.example.domain.dentist.service.CategoryDentistService;
-import com.example.domain.dentist.service.DentistService;
-import com.example.domain.dentist.service.OpenDentistService;
-import com.example.domain.dentist.service.PersonalizedDentistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +17,10 @@ import java.util.List;
 @RequestMapping("/api/public/find")
 public class PublicDentistController {
 
-    private final PersonalizedDentistService personalizedDentistService;
-    private final OpenDentistService openDentistService;
-    private final CategoryDentistService categoryDentistService;
-    private final DentistService dentistService;
+    private final PersonalizedDentistBusiness personalizedDentistBusiness;
+    private final OpenDentistBusiness openDentistBusiness;
+    private final CategoryDentistBusiness categoryDentistBusiness;
+    private final DentistBusiness dentistBusiness;
 
     @GetMapping("/dentist")
     public ResponseEntity<List<DentistDto>> personalizedDenDis(
@@ -32,7 +32,7 @@ public class PublicDentistController {
         LocalTime queryTime = LocalTime.parse(local_time);
         PersonalizedDentLocDto requestDto = new PersonalizedDentLocDto(day, queryTime, latitude, longitude);
 
-        List<DentistDto> dentists = personalizedDentistService.personalizedDentistByDis(requestDto);
+        List<DentistDto> dentists = personalizedDentistBusiness.personalizedDentistByDis(requestDto);
         return ResponseEntity.ok(dentists);
     }
 
@@ -43,7 +43,7 @@ public class PublicDentistController {
     ) {
         LocationDto requestDto = new LocationDto(latitude, longitude);
 
-        List<DentistDto> dentists = openDentistService.openDentistNow(requestDto);
+        List<DentistDto> dentists = openDentistBusiness.openDentistNow(requestDto);
         return ResponseEntity.ok(dentists);
     }
 
@@ -54,7 +54,7 @@ public class PublicDentistController {
             @RequestParam("longitude") Double longitude
     ) {
         CategoryLocDto categoryLocDto = new CategoryLocDto(category, latitude, longitude);
-        List<DentistDto> dentists = categoryDentistService.categoryDentist(categoryLocDto);
+        List<DentistDto> dentists = categoryDentistBusiness.categoryDentist(categoryLocDto);
         return ResponseEntity.ok(dentists);
     }
 
@@ -62,7 +62,7 @@ public class PublicDentistController {
     public ResponseEntity<DentistDetail> getDentistById(
             @PathVariable("id") String id
     ) {
-        DentistDetail dentist = dentistService.findDentist(id);
+        DentistDetail dentist = dentistBusiness.findDentist(id);
         return ResponseEntity.ok(dentist);
     }
 
@@ -75,7 +75,7 @@ public class PublicDentistController {
     ) {
         SearchNameDto searchNameDto = new SearchNameDto(name, latitude, longitude);
 
-        List<DentistDto> dentists = dentistService.findDentistByName(searchNameDto);
+        List<DentistDto> dentists = dentistBusiness.findDentistByName(searchNameDto);
         return ResponseEntity.ok(dentists);
     }
 }

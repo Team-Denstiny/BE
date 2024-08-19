@@ -1,20 +1,20 @@
-package com.example.domain.dentist.service;
+package com.example.domain.dentist.business;
 
+import annotation.Business;
 import com.example.dentist.document.DynamicInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.LocationDto;
 import com.example.domain.dentist.converter.DentistConverter;
+import com.example.domain.dentist.service.DentistService;
+import com.example.domain.user.service.UserService;
 import com.example.jwt.JWTUtil;
-import com.example.dentist.repository.DynamicInfoRepository;
 import com.example.user.UserEntity;
-import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
 import com.example.util.TimeUtil;
 import error.ErrorCode;
 import exception.ApiException;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
@@ -22,14 +22,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Business
+@AllArgsConstructor
 @Slf4j
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class OpenDentistService {
-    private final DynamicInfoRepository dynamicInfoRepository;
-    private final UserRepository userRepository;
+@Transactional(readOnly = true)
+public class OpenDentistBusiness {
+
+    private final DentistService dentistService;
     private final DentistConverter dentistConverter;
+    private final UserService userService;
     private final JWTUtil jwtUtil;
 
     public List<DentistDto> openDentistNow(
@@ -53,9 +54,10 @@ public class OpenDentistService {
 
         log.info("{}, {}", currentTime, day);
 
-        // 현재 요일과 시간에 열린 병원만 필터링
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
+        String currentTimeStr = currentTime.toString();
 
+        // 현재 요일과 시간에 열린 병원만 필터링
+        List<DynamicInfoDoc> openDentists = dentistService.findOpenDentistsByNow(day, currentTimeStr);
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
 
@@ -68,7 +70,7 @@ public class OpenDentistService {
         return sortedHospitals;
     }
 
-    public List<DentistDto> openDentistNowSaved(String token){
+    public List<DentistDto> openDentistSavedNow(String token){
         // 현재 시간과 요일
         LocalTime currentTime = TimeUtil.getCurrentTime();
         String day = TimeUtil.getCurrentDayOfWeek();
@@ -77,14 +79,16 @@ public class OpenDentistService {
 
         String access = token.split(" ")[1];
         String resourceId = jwtUtil.getResourceId(access);
-        UserEntity user = userRepository.findByResourceId(resourceId);
+        UserEntity user = userService.getUserByResourceId(resourceId);
 
         Double latitude = user.getLatitude();
         Double longitude = user.getLongitude();
+
         log.info("{}, {}", latitude, longitude);
 
+        String currentTimeStr = currentTime.toString();
         // 현재 요일과 시간에 열린 병원만 필터링
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, currentTime.toString());
+        List<DynamicInfoDoc> openDentists = dentistService.findOpenDentistsByNow(day, currentTimeStr);
 
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
@@ -98,4 +102,3 @@ public class OpenDentistService {
 
     }
 }
-

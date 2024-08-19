@@ -48,6 +48,7 @@ public class DentistService {
 
     }
 
+
     // 병원 이름으로 검색 -> 근거리로 병원 정렬
     public List<DentistDto> findDentistByName(SearchNameDto searchNameDto){
 
@@ -69,5 +70,31 @@ public class DentistService {
 
         return sortedHospitals;
 
+    }
+    public DynamicInfoDoc findDynamicInfoById(String id){
+        return dynamicInfoRepository
+                .findById(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
+    }
+    public StaticInfoDoc findStaticInfoById(String id){
+        return staticInfoRepository
+                .findById(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
+    }
+
+    public List<DynamicInfoDoc> openDentistsByDayTime(String day, String queryTimeStr){
+        return dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
+    }
+
+    public List<DynamicInfoDoc> findOpenDentistsByNow(String day, String currentTime){
+        return dynamicInfoRepository.findOpenDentists(day, currentTime);
+    }
+
+    public List<DynamicInfoDoc> findByTreatCate(String category){
+        return dynamicInfoRepository.findByTreatCate(category);
+    }
+
+    public List<DynamicInfoDoc> findByNameContaining(String name){
+        return dynamicInfoRepository.findByNameContaining(name);
     }
 }

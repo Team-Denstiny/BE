@@ -1,36 +1,35 @@
-package com.example.domain.dentist.service;
+package com.example.domain.dentist.business;
 
+import annotation.Business;
 import com.example.dentist.document.DynamicInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentDto;
 import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
 import com.example.domain.dentist.converter.DentistConverter;
+import com.example.domain.dentist.service.DentistService;
+import com.example.domain.user.service.UserService;
 import com.example.jwt.JWTUtil;
-import com.example.dentist.repository.DynamicInfoRepository;
 import com.example.user.UserEntity;
-import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-@Service
 @Slf4j
-@Transactional
+@Business
 @AllArgsConstructor
-public class PersonalizedDentistService {
+@Transactional(readOnly = true)
+public class PersonalizedDentistBusiness {
 
-    private final DynamicInfoRepository dynamicInfoRepository;
     private final DentistConverter dentistConverter;
-    private final UserRepository userRepository;
+    private final DentistService dentistService;
+    private final UserService userService;
     private final JWTUtil jwtUtil;
 
     public List<DentistDto> personalizedDentistByDis(
@@ -52,7 +51,7 @@ public class PersonalizedDentistService {
 
         String queryTimeStr = queryTime.toString();
 
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
+        List<DynamicInfoDoc> openDentists = dentistService.openDentistsByDayTime(day, queryTimeStr);
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
 
@@ -65,9 +64,7 @@ public class PersonalizedDentistService {
         return sortedHospitals;
     }
 
-
-
-    public List<DentistDto> personalizedDentistByDisSaved(
+    public List<DentistDto> personalizedDentistBySavedDis(
             PersonalizedDentDto personalizedDentDto, String token
     ) {
 
@@ -85,11 +82,11 @@ public class PersonalizedDentistService {
 
         String access = token.split(" ")[1];
         String resourceId = jwtUtil.getResourceId(access);
-        UserEntity user = userRepository.findByResourceId(resourceId);
+        UserEntity user = userService.getUserByResourceId(resourceId);
 
         String queryTimeStr = queryTime.toString();
 
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
+        List<DynamicInfoDoc> openDentists = dentistService.openDentistsByDayTime(day, queryTimeStr);
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
 
@@ -106,14 +103,3 @@ public class PersonalizedDentistService {
         return sortedHospitals;
     }
 }
-
-
-
-
-
-
-
-
-
-
-

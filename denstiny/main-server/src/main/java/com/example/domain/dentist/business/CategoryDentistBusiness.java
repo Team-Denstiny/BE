@@ -1,37 +1,36 @@
-package com.example.domain.dentist.service;
+package com.example.domain.dentist.business;
 
+import annotation.Business;
 import com.example.dentist.document.DynamicInfoDoc;
 import com.example.domain.dentist.controller.model.CategoryDto;
 import com.example.domain.dentist.controller.model.CategoryLocDto;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.dentist.converter.DentistConverter;
+import com.example.domain.dentist.service.DentistService;
+import com.example.domain.user.service.UserService;
 import com.example.jwt.JWTUtil;
-import com.example.dentist.repository.DynamicInfoRepository;
 import com.example.user.UserEntity;
-import com.example.user.UserRepository;
 import com.example.util.DistanceUtil;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+@Business
 @Slf4j
-@Service
-@Transactional
 @RequiredArgsConstructor
-public class CategoryDentistService {
+@Transactional(readOnly = true)
+public class CategoryDentistBusiness {
 
-    private final DynamicInfoRepository dynamicInfoRepository;
+    private final DentistService dentistService;
     private final JWTUtil jwtUtil;
     private final DentistConverter dentistConverter;
-    private final UserRepository userRepository;
+    private final UserService UserService;
 
     public List<DentistDto> categoryDentist(
             CategoryLocDto categoryLocDto
@@ -48,7 +47,7 @@ public class CategoryDentistService {
         }
 
         // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dynamicInfoRepository.findByTreatCate(category);
+        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCate(category);
 
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
 
@@ -58,8 +57,6 @@ public class CategoryDentistService {
                         DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
                 .collect(Collectors.toList());
     }
-
-
 
     public List<DentistDto> categoryDentistSaved(
             CategoryDto categoryDto, String token
@@ -75,14 +72,14 @@ public class CategoryDentistService {
 
         String access = token.split(" ")[1];
         String resourceId = jwtUtil.getResourceId(access);
-        UserEntity user = userRepository.findByResourceId(resourceId);
+        UserEntity user = UserService.getUserByResourceId(resourceId);
 
         Double latitude = user.getLatitude();
         Double longitude = user.getLongitude();
         log.info("{}, {}", latitude, longitude);
 
         // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dynamicInfoRepository.findByTreatCate(category);
+        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCate(category);
 
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
 
@@ -94,6 +91,6 @@ public class CategoryDentistService {
                 .collect(Collectors.toList());
 
         return sortedHospitals;
-
     }
+
 }
