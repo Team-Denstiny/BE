@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,53 +30,27 @@ public class DentistService {
 
     private final DynamicInfoRepository dynamicInfoRepository;
     private final StaticInfoRepository staticInfoRepository;
-    private final DentistConverter dentistConverter;
 
-    // 병원 상세 페이지
-    public DentistDetail findDentist(String id){
 
-        log.info("id = {}",id);
-
-        DynamicInfoDoc dynamicInfoDoc = dynamicInfoRepository
-                .findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
-
-        StaticInfoDoc staticInfoDoc = staticInfoRepository
-                .findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
-
-        return dentistConverter.toDentistDto(dynamicInfoDoc, staticInfoDoc);
-
+    public DynamicInfoDoc saveDynamicInfo(DynamicInfoDoc dynamicInfoDoc){
+        return dynamicInfoRepository.save(dynamicInfoDoc);
     }
-
-
-    // 병원 이름으로 검색 -> 근거리로 병원 정렬
-    public List<DentistDto> findDentistByName(SearchNameDto searchNameDto){
-
-        String name = searchNameDto.getName();
-        Double latitude = searchNameDto.getLatitude();
-        Double longitude = searchNameDto.getLongitude();
-
-        log.info("search = {}", name);
-
-        List<DynamicInfoDoc> dynamicInfoDocs = dynamicInfoRepository.findByNameContaining(name);
-
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoDocs);
-
-        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
-
-        return sortedHospitals;
-
-    }
-    public DynamicInfoDoc findDynamicInfoById(String id){
+    public DynamicInfoDoc findDynamicInfoById(String dentistId){
         return dynamicInfoRepository
-                .findById(id)
+                .findById(dentistId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
     }
+    public void deleteReviews(String dentistId, String reviewId){
+        List<ObjectId> reivewIds = findDynamicInfoById(dentistId).getReviews();
+        ObjectId objectReviewId = new ObjectId(reviewId);
+
+        if (reivewIds.contains(objectReviewId)){
+            reivewIds.remove(objectReviewId);
+        } else {
+            throw new ApiException(ErrorCode.NULL_POINT,"reviews에 해당 id의 reivew가 없습니다");
+        }
+    }
+
     public StaticInfoDoc findStaticInfoById(String id){
         return staticInfoRepository
                 .findById(id)
