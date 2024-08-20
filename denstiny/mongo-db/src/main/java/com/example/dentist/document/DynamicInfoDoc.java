@@ -3,12 +3,12 @@ package com.example.dentist.document;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Document(collection = "dynamicInfo")
 @NoArgsConstructor
@@ -35,6 +35,12 @@ public class DynamicInfoDoc {
 
     @Field("treat_cate")
     private List<String> category;
+
+    @Field("reviews")
+    private List<ObjectId> reviews;
+
+    @Field("treat_cate_easy")
+    private List<String> categorySearch;
 
 
 }
