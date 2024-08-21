@@ -61,6 +61,7 @@ public class DentistConverter {
                 .longitude(staticInfo.getLon())
                 .timeDataMap(dynamicInfo.getTimeDataMap())
                 .category(dynamicInfo.getCategory())
+                .categoryEasy(dynamicInfo.getCategorySearch())
                 .subwayInfo(staticInfo.getSubwayInfo())
                 .subwayName(staticInfo.getSubwayName())
                 .dist(staticInfo.getDist())

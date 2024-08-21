@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface DynamicInfoRepository extends MongoRepository<DynamicInfoDoc, String> {
 
-    @Query("{ 'treat_cate': ?0 }")
-    List<DynamicInfoDoc> findByTreatCate(String treatCate);
+    @Query("{ 'treat_cate_easy': ?0 }")
+    List<DynamicInfoDoc> findByTreatCateEasy(String treatCateEasy);
 
     // 요일과 시간 조건에 맞는 병원의 정보를 가져오는 쿼리
     @Query("{ 'timeInfo.?0.work_time.0': { $lte: ?1 }, 'timeInfo.?0.work_time.1': { $gte: ?1 }, 'timeInfo.?0.description': { $not: /휴무/ } }")

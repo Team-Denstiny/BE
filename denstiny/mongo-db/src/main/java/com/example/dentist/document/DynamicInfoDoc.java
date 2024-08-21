@@ -24,12 +24,6 @@ public class DynamicInfoDoc {
     @Field("name")
     private String name;
 
-    @Field("score")
-    private Double score;
-
-    @Field("review_cnt")
-    private Integer reviewCnt;
-
     @Field("timeInfo")
     private Map<String, TimeData> timeDataMap;
 

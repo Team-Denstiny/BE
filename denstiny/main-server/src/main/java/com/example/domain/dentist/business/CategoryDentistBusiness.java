@@ -47,7 +47,7 @@ public class CategoryDentistBusiness {
         }
 
         // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCate(category);
+        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCateEasy(category);
 
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
 
@@ -79,7 +79,7 @@ public class CategoryDentistBusiness {
         log.info("{}, {}", latitude, longitude);
 
         // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCate(category);
+        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCateEasy(category);
 
         List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
 

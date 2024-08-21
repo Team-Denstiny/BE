@@ -39,4 +39,6 @@ public class DentistDetail {
     private Map<String, TimeData> timeDataMap;
 
     private List<String> category;
+
+    private List<String> categoryEasy;
 }

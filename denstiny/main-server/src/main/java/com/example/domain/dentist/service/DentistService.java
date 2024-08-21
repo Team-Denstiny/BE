@@ -65,8 +65,8 @@ public class DentistService {
         return dynamicInfoRepository.findOpenDentists(day, currentTime);
     }
 
-    public List<DynamicInfoDoc> findByTreatCate(String category){
-        return dynamicInfoRepository.findByTreatCate(category);
+    public List<DynamicInfoDoc> findByTreatCateEasy(String category){
+        return dynamicInfoRepository.findByTreatCateEasy(category);
     }
 
     public List<DynamicInfoDoc> findByNameContaining(String name){
