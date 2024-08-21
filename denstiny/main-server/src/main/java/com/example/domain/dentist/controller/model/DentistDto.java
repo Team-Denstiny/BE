@@ -28,10 +28,6 @@ public class DentistDto {
 
     private Double longitude;
 
-    private Double score;
-
-    private Integer reviewCnt;
-
     private String subwayInfo;
 
     private String subwayName;

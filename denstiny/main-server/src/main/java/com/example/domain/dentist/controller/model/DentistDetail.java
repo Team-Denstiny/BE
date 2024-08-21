@@ -36,10 +36,6 @@ public class DentistDetail {
 
     private Integer dist;
 
-    private Double score;
-
-    private Integer reviewCnt;
-
     private Map<String, TimeData> timeDataMap;
 
     private List<String> category;
