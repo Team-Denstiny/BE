@@ -73,8 +73,10 @@ public class ResendTokenEndPoint {
                     UserEntity user = userRepository.findByResourceId(resourceId);
 
                     if (user != null) {
-                        // 주소 업데이트
+                        // 주소,위도,경도 업데이트
                         user.setAddress(oauth2AddressPlusDto.getAddress());
+                        user.setLatitude(oauth2AddressPlusDto.getLatitude());
+                        user.setLongitude(oauth2AddressPlusDto.getLongitude());
                         Long userId = user.getUserId();
 
                         headers.set(HEADER_AUTHORIZATION, TOKEN_PREFIX + cookieValue);

@@ -44,11 +44,11 @@ public class UserService {
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "User Entity Null"));
     }
 
-    private boolean isDuplicateEmail(String email) {
+    public boolean isDuplicateEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    private boolean isDuplicateNickname(String nickName) {
+    public boolean isDuplicateNickname(String nickName) {
         return userRepository.findByNickName(nickName).isPresent();
     }
 
@@ -56,6 +56,9 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "pk로 회원을 찾을 수 없음"));
         return userEntity;
+    }
+    public UserEntity getUserByResourceId(String resourceId){
+        return userRepository.findByResourceId(resourceId);
     }
 
     public UserEntity updateUser(Long userId, UserUpdateRequest request) {
@@ -88,4 +91,5 @@ public class UserService {
         // 변경 사항 저장
         return userRepository.save(userEntity);
     }
+
 }

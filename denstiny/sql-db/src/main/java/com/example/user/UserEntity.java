@@ -49,4 +49,10 @@ public class UserEntity {
     @Column(name = "profile_img")
     private String profileImg;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
 }

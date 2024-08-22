@@ -28,5 +28,9 @@ public class UserRegisterRequest {
     private String password;
     @NotBlank
     private String address;
+    @NotNull
+    private Double latitude;
+    @NotNull
+    private Double longitude;
 
 }
