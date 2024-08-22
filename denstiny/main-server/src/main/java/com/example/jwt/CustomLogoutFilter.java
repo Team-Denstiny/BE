@@ -1,6 +1,7 @@
 package com.example.jwt;
 
 import com.example.refresh.RefreshRepository;
+import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -103,6 +104,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setStatus(HttpServletResponse.SC_OK);
 
         // TODO 로그인되지 않은 메인페이지로 이동
+        response.sendRedirect("http://localhost:5173");
     }
 
 }

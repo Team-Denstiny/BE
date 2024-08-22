@@ -59,7 +59,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         /// ==> ++ 여기에 id 추가해서 보내달라.
         response.setStatus(HttpServletResponse.SC_OK);
         // redirect
-        response.sendRedirect("http://localhost:5173/");
+        response.sendRedirect("http://localhost:5173/signin/endpoint");
 
     }
 
