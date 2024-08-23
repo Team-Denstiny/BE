@@ -1,11 +1,13 @@
 package com.example.domain.user_bookmarked.business;
 
-import annotation.Business;;
+import java.util.List;
+
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.user_bookmarked.converter.UserBookmarkedConverter;
 import com.example.domain.user_bookmarked.service.UserBookmarkedService;
+
+import annotation.Business;
 import lombok.AllArgsConstructor;
-import java.util.List;
 
 @Business
 @AllArgsConstructor

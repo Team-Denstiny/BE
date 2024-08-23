@@ -1,31 +1,28 @@
 package com.example.oauth2.handler;
 
-import com.example.domain.user.controller.model.CustomUserDetails;
-import com.example.jwt.JWTUtil;
-import com.example.oauth2.dto.CustomOAuth2User;
-import com.example.refresh.RefreshEntity;
-import com.example.refresh.RefreshRepository;
-import com.example.user.UserEntity;
-import com.example.user.UserRepository;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
-import com.example.user.UserRepository;
-import error.ErrorCode;
-import exception.ApiException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import com.example.domain.user.service.UserService;
+import com.example.jwt.JWTUtil;
+import com.example.oauth2.dto.CustomOAuth2User;
+import com.example.refresh.RefreshEntity;
+import com.example.refresh.RefreshRepository;
+import com.example.user.UserEntity;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -33,13 +30,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        boolean isNewUser = userDetails.isNewUser();
-
+        String userResoureId =  userDetails.getResourceId();
+        String userAddress = null;
+        if (userResoureId != null) {
+            UserEntity user = userService.getUserByResourceId(userResoureId);
+            userAddress = user.getAddress();
+        }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -56,20 +58,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie("access", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
-
-        if (isNewUser) {
-
+        
+        String frontUrl = "http://localhost:5173/signin/endpoint";
+        if (userResoureId == null || userAddress == null) {
+            /* 
             response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write("회원가입이 완료되었습니다.");
+            */
+            response.sendRedirect(frontUrl+"?status=created");
         } else {
+            /* 
             response.setContentType("application/json; charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("로그인 성공");
+            */
+            response.sendRedirect(frontUrl+"?status=logined");
         }
-
     }
 
     private Cookie createCookie(String key, String value) {

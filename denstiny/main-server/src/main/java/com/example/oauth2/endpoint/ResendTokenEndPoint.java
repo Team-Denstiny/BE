@@ -1,27 +1,33 @@
 package com.example.oauth2.endpoint;
 
+import static com.example.constant.TokenHeaderConstant.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import api.Api;
-import api.Result;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.jwt.JWTUtil;
 import com.example.oauth2.dto.Oauth2AddressPlusDto;
 import com.example.user.UserEntity;
+
+import api.Api;
+import api.Result;
 import error.ErrorCode;
 import exception.ApiException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
-import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @Slf4j
 @RestController
@@ -60,6 +66,7 @@ public class ResendTokenEndPoint {
             throw new ApiException(ErrorCode.NULL_POINT, "쿠키가 존재하지 않습니다");
         }
 
+        log.info("들어왔어요");
         UserEntity user = getUserFromCookie(accessCookieValue);
         user.setAddress(oauth2AddressPlusDto.getAddress());
         user.setLatitude(oauth2AddressPlusDto.getLatitude());
