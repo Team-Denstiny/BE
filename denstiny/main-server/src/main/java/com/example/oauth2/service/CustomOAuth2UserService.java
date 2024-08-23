@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
@@ -78,6 +77,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .birthAt(oAuth2Response.getBirthyear())
                     .phoneNumber(oAuth2Response.getPhone())
                     .profileImg(oAuth2Response.getProfile())
+                    .isNewUser(true)
                     .build();
 
             return new CustomOAuth2User(userDTO);
@@ -103,6 +103,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .birthAt(existData.getBirthAt())
                     .phoneNumber(oAuth2Response.getPhone())
                     .profileImg(oAuth2Response.getProfile())
+                    .isNewUser(false)
                     .build();
 
             return new CustomOAuth2User(userDTO);
@@ -119,4 +120,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         return uniqueNickname;
     }
+
+
 }

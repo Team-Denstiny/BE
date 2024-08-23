@@ -38,6 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean isNewUser = userDetails.isNewUser();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -56,10 +57,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("access", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
 
-        /// ==> ++ 여기에 id 추가해서 보내달라.
-        response.setStatus(HttpServletResponse.SC_OK);
-        // redirect
-        response.sendRedirect("http://localhost:5173/");
+        if (isNewUser) {
+
+            response.setContentType("application/json; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.getWriter().write("회원가입이 완료되었습니다.");
+        } else {
+            response.setContentType("application/json; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("로그인 성공");
+        }
 
     }
 

@@ -75,7 +75,7 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue","api/users/check-nickname","api/users/check-email").permitAll()
+                        .requestMatchers("/api/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue","api/users/check-nickname","api/users/check-email").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTFilter(jwtUtil,objectMapper,userRepository), OAuth2LoginAuthenticationFilter.class)
