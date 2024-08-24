@@ -52,7 +52,7 @@ public class UserBusiness {
     }
 
     public Map<String,Boolean> checkEmail(String email){
-        boolean isDuplicate = userService.isDuplicateNickname(email);
+        boolean isDuplicate = userService.isDuplicateEmail(email);
         Map<String, Boolean> response = new HashMap<>();
         response.put("isDuplicate", isDuplicate);
         return response;
