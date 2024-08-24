@@ -84,7 +84,7 @@ public class ResendTokenEndPoint {
         Api<Map<String, Long>> apiResponse = new Api<>(new Result(HttpStatus.CREATED.value(), "주소 저장 성공", "성공"), responseBody);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .header(HEADER_AUTHORIZATION, TOKEN_PREFIX + accessCookieValue)
+                .header(HEADER_AUTHORIZATION, accessCookieValue)
                 .body(apiResponse);
     }
 
@@ -106,7 +106,7 @@ public class ResendTokenEndPoint {
 
         Api<Map<String, Long>> apiResponse = new Api<>(new Result(HttpStatus.OK.value(), "로그인 성공", "성공"), responseBody);
         return ResponseEntity.ok()
-                .header(HEADER_AUTHORIZATION, TOKEN_PREFIX + accessCookieValue)
+                .header(HEADER_AUTHORIZATION, accessCookieValue)
                 .body(apiResponse);
     }
 }
