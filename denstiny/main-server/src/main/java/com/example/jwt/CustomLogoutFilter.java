@@ -10,11 +10,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 @RequiredArgsConstructor
+@Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
@@ -44,6 +46,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // 문자열 중간에 api/public/logout 이 있고 + POST 방식인 경우
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+        log.info("What the fuck : " + cookies);
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
@@ -89,11 +92,19 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         SecurityContextHolder.clearContext();
 
+        log.info("로그 아웃 되었습니다");
+
+        //Junhyeong Logic 추가 => Cache 방지 헤더 추가
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
+
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
 
         // TODO 로그인되지 않은 메인페이지로 이동
-        response.sendRedirect( "http://localhost:5173/");
+        //response.sendRedirect( "http://localhost:5173/");
     }
 
 }
