@@ -98,7 +98,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .resourceId(existData.getResourceId())
                     .role(UserRole.ROLE_MEMBER.toString())
                     .name(oAuth2Response.getName())
-                    .nickname(oAuth2Response.getNickname())
                     .email(oAuth2Response.getEmail())
                     .birthAt(existData.getBirthAt())
                     .phoneNumber(oAuth2Response.getPhone())
