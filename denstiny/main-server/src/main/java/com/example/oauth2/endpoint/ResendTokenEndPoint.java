@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
+@RequestMapping("/api/login")
 public class ResendTokenEndPoint {
 
     private final UserService userService;
@@ -67,10 +67,14 @@ public class ResendTokenEndPoint {
         }
 
         log.info("들어왔어요");
+
         UserEntity user = getUserFromCookie(accessCookieValue);
         user.setAddress(oauth2AddressPlusDto.getAddress());
         user.setLatitude(oauth2AddressPlusDto.getLatitude());
         user.setLongitude(oauth2AddressPlusDto.getLongitude());
+
+        // db에 업데이트 내용 저장
+        userService.saveUser(user);
 
         Map<String, Long> responseBody = new HashMap<>();
         responseBody.put("id", user.getUserId());
