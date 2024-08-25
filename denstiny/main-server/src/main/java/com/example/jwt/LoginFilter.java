@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.Iterator;
 
 import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
-import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -95,7 +94,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         addRefreshEntity(resourceId, refresh,86400000L);
 
         // 헤더와 쿠키 설정
-        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + access);
+        response.setHeader(HEADER_AUTHORIZATION, access);
         response.addCookie(createCookie("refresh", refresh));
 
 
