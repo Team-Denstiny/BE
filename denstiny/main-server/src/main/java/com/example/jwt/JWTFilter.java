@@ -40,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String authorization = request.getHeader(HEADER_AUTHORIZATION);
 
         // access키에 담긴 토큰 꺼내기
-        if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX)){
+        if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX) || request.getRequestURI().equals("/api/users/reissue")){
 //            log.info("토큰이 없거나 Bearer로 시작하지 않습니다.");
             filterChain.doFilter(request,response);
 
@@ -50,7 +50,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
 
         String accessToken = getAccessToken(authorization);
-        log.info("What the Fucking Token : " + accessToken);
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {
             jwtUtil.isExpired(accessToken);

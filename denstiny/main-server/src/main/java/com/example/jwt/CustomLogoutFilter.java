@@ -49,7 +49,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // 문자열 중간에 api/public/logout 이 있고 + POST 방식인 경우
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        log.info("What the fuck : " + cookies);
+        log.info("Cookie 상태 (fuck) : " + cookies.toString());
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
@@ -92,6 +92,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         Cookie cookie = new Cookie("refresh", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        log.info("Set-Cookie 추적 로그 : PATH : {}", cookie.getPath());
 
         SecurityContextHolder.clearContext();
         

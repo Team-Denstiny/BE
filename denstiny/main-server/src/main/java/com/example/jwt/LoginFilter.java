@@ -1,21 +1,12 @@
 package com.example.jwt;
 
-import api.Api;
-import api.Result;
-import com.example.domain.user.controller.model.CustomUserDetails;
-import com.example.domain.user.controller.model.UserLoginResponse;
-import com.example.domain.user.controller.model.UserLoginRequest;
-import com.example.refresh.RefreshEntity;
-import com.example.refresh.RefreshRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import error.ErrorCode;
-import exception.ApiException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import static com.example.constant.TokenHeaderConstant.*;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,12 +16,23 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import com.example.domain.user.controller.model.CustomUserDetails;
+import com.example.domain.user.controller.model.UserLoginRequest;
+import com.example.domain.user.controller.model.UserLoginResponse;
+import com.example.refresh.RefreshEntity;
+import com.example.refresh.RefreshRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
+import api.Api;
+import api.Result;
+import error.ErrorCode;
+import exception.ApiException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -125,8 +127,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24*60*60);
         //cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
+        log.info("쿠키Path 추적(in createCoookie) : {}", cookie.getPath());
 
         return cookie;
     }
