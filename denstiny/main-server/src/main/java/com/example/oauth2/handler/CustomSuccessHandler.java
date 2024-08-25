@@ -37,11 +37,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         CustomOAuth2User userDetails = (CustomOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userResoureId =  userDetails.getResourceId();
-        String userAddress = null;
-        if (userResoureId != null) {
-            UserEntity user = userService.getUserByResourceId(userResoureId);
-            userAddress = user.getAddress();
-        }
+
+        UserEntity user = userService.getUserByResourceId(userResoureId);
+        String userAddress = user.getAddress();
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
@@ -60,19 +59,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("refresh", refreshToken));
         
         String frontUrl = "http://localhost:5173/signin/endpoint";
-        if (userResoureId == null || userAddress == null) {
-            /* 
-            response.setContentType("application/json; charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("회원가입이 완료되었습니다.");
-            */
+        if (userAddress == null) {
             response.sendRedirect(frontUrl+"?status=created");
         } else {
-            /* 
-            response.setContentType("application/json; charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("로그인 성공");
-            */
             response.sendRedirect(frontUrl+"?status=logined");
         }
     }
