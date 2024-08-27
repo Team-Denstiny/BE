@@ -1,35 +1,31 @@
 package com.example.dentist.document;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
-
-@Document(collection = "staticInfo")
+@Document(collection = "dentistInfo")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class StaticInfoDoc {
+public class DentistInfoDoc {
 
-
-//    @Field("_id") // JSON의 "_id"와 매핑
-//    private String _id;
     @Id
-    @Field("id")
     private String id;
 
     @Field("name")
     private String name;
 
     @Field("addr")
-    private String addr;
+    private String address;
 
     @Field("dong")
     private String dong;
@@ -38,14 +34,13 @@ public class StaticInfoDoc {
     private String gu;
 
     @Field("tele")
-    private String tele;
+    private String telephone;
 
     @Field("img")
-    private String img;
-
+    private String imageUrl;
     @GeoSpatialIndexed
-    @Field("location") // JSON의 "location"과 매핑
-    private Point location; // JSON의 location 필드는 GeoJSON 포맷의 Point 객체
+    @Field("location")
+    private Point location; // 사용자가 지정한 좌표는 GeoJsonPoint로 매핑
 
     @Field("subway_info")
     private String subwayInfo;
@@ -54,5 +49,14 @@ public class StaticInfoDoc {
     private String subwayName;
 
     @Field("dist")
-    private Integer dist;
+    private Integer distance;
+
+    @Field("timeInfo")
+    private Map<String, TimeData> timeInfo; // 요일별 시간 정보
+
+    @Field("treat_cate")
+    private List<String> treatmentCategories; // 치료 카테고리 목록
+
+
 }
+

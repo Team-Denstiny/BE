@@ -14,21 +14,18 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 public class DentistDetail {
-    private String id;
 
     private String name;
 
     private String addr;
+
+    private String gu;
 
     private String dong;
 
     private String tele;
 
     private String img;
-
-    private Double latitude;
-
-    private Double longitude;
 
     private String subwayInfo;
 
@@ -40,5 +37,4 @@ public class DentistDetail {
 
     private List<String> category;
 
-    private List<String> categoryEasy;
 }

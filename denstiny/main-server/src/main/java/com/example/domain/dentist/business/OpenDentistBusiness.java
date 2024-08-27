@@ -1,26 +1,21 @@
 package com.example.domain.dentist.business;
 
 import annotation.Business;
-import com.example.dentist.document.DynamicInfoDoc;
+import com.example.dentist.document.DentistInfoDoc;
 import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.domain.dentist.controller.model.LocationDto;
-import com.example.domain.dentist.converter.DentistConverter;
-import com.example.domain.dentist.service.DentistService;
+import com.example.domain.dentist.controller.model.LocationGuDto;
+import com.example.domain.dentist.converter.DentistInfoConverter;
+import com.example.domain.dentist.service.OpenDentistService;
 import com.example.domain.user.service.UserService;
 import com.example.jwt.JWTUtil;
 import com.example.user.UserEntity;
-import com.example.util.DistanceUtil;
-import com.example.util.TimeUtil;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Business
 @AllArgsConstructor
@@ -28,77 +23,63 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class OpenDentistBusiness {
 
-    private final DentistService dentistService;
-    private final DentistConverter dentistConverter;
+    private final OpenDentistService openDentistService;
+    private final DentistInfoConverter dentistInfoConverter;
+
     private final UserService userService;
     private final JWTUtil jwtUtil;
 
-    public List<DentistDto> openDentistNow(
-            LocationDto locationDto
-    ) {
 
-        // 위도, 경도
-        Double latitude = locationDto.getLatitude();
-        Double longitude = locationDto.getLongitude();
+public List<DentistDto> openDentistNow(
+        LocationGuDto locationGuDto,
+        String lastDentistId,
+        int limit
+) {
 
-        log.info("{}, {}", latitude, longitude);
+    // 위도, 경도, 구
+    Double latitude = locationGuDto.getLatitude();
+    Double longitude = locationGuDto.getLongitude();
+    String gu = locationGuDto.getGu();
 
-        // Null 체크
-        if (latitude == null || longitude == null) {
-            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
-        }
+    log.info("{}, {}, {}", latitude, longitude,gu);
 
-        // 현재 시간과 요일
-        LocalTime currentTime = TimeUtil.getCurrentTime();
-        String day = TimeUtil.getCurrentDayOfWeek();
-
-        log.info("{}, {}", currentTime, day);
-
-        String currentTimeStr = currentTime.toString();
-
-        // 현재 요일과 시간에 열린 병원만 필터링
-        List<DynamicInfoDoc> openDentists = dentistService.findOpenDentistsByNow(day, currentTimeStr);
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
-
-
-        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
-
-        return sortedHospitals;
+    // Null 체크
+    if (latitude == null || longitude == null || gu == null) {
+        throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
     }
 
-    public List<DentistDto> openDentistSavedNow(String token){
-        // 현재 시간과 요일
-        LocalTime currentTime = TimeUtil.getCurrentTime();
-        String day = TimeUtil.getCurrentDayOfWeek();
+    List<DentistInfoDoc> nearbyDentists = openDentistService.openDentist(locationGuDto, lastDentistId, limit);
+    List<DentistDto> dentistDtos = dentistInfoConverter.toDentistDtos(nearbyDentists);
 
-        log.info("{}, {}", currentTime, day);
+
+    return dentistDtos;
+    }
+
+    public List<DentistDto> openDentistSaved(
+            String token,
+            String lastDentistId,
+            int limit
+    ) {
 
         String access = token.split(" ")[1];
         String resourceId = jwtUtil.getResourceId(access);
         UserEntity user = userService.getUserByResourceId(resourceId);
 
+        String gu = user.getAddress().split(" ")[1];
         Double latitude = user.getLatitude();
         Double longitude = user.getLongitude();
 
-        log.info("{}, {}", latitude, longitude);
+        LocationGuDto locationGuDto = LocationGuDto.builder()
+                .gu(gu)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
 
-        String currentTimeStr = currentTime.toString();
-        // 현재 요일과 시간에 열린 병원만 필터링
-        List<DynamicInfoDoc> openDentists = dentistService.findOpenDentistsByNow(day, currentTimeStr);
+        List<DentistInfoDoc> nearbyDentists = openDentistService.openDentist(locationGuDto, lastDentistId, limit);
+        List<DentistDto> dentistDtos = dentistInfoConverter.toDentistDtos(nearbyDentists);
 
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
 
-        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
-
-        return sortedHospitals;
-
+        return dentistDtos;
     }
+
 }

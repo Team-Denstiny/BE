@@ -1,25 +1,22 @@
 package com.example.domain.dentist.business;
 
 import annotation.Business;
-import com.example.dentist.document.DynamicInfoDoc;
+import com.example.dentist.document.DentistInfoDoc;
 import com.example.domain.dentist.controller.model.CategoryDto;
 import com.example.domain.dentist.controller.model.CategoryLocDto;
 import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.domain.dentist.converter.DentistConverter;
-import com.example.domain.dentist.service.DentistService;
+import com.example.domain.dentist.converter.DentistInfoConverter;
+import com.example.domain.dentist.service.CategoryDentistService;
 import com.example.domain.user.service.UserService;
 import com.example.jwt.JWTUtil;
 import com.example.user.UserEntity;
-import com.example.util.DistanceUtil;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Business
 @Slf4j
@@ -27,48 +24,47 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CategoryDentistBusiness {
 
-    private final DentistService dentistService;
+    private final CategoryDentistService categoryDentistService;
+    private final DentistInfoConverter dentistInfoConverter;
+
     private final JWTUtil jwtUtil;
-    private final DentistConverter dentistConverter;
     private final UserService UserService;
 
     public List<DentistDto> categoryDentist(
-            CategoryLocDto categoryLocDto
+            CategoryLocDto categoryLocDto,
+            String lastDentistId,
+            int limit
     ){
         String category = categoryLocDto.getCategory();
+        String gu = categoryLocDto.getGu();
         Double latitude = categoryLocDto.getLatitude();
         Double longitude = categoryLocDto.getLongitude();
 
-        log.info("{}, {} , {}",category,latitude, longitude);
+        log.info("{}, {} ,{} ,{}", category, latitude, longitude, gu);
 
         // Null 체크
-        if (category == null || latitude == null || longitude == null) {
+        if (category == null || latitude == null || longitude == null || gu == null) {
             throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
         }
 
-        // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCateEasy(category);
+        List<DentistInfoDoc> dentistInfoDocs = categoryDentistService.categoryDentist(categoryLocDto, lastDentistId, limit);
+        List<DentistDto> dentistDtos = dentistInfoConverter.toDentistDtos(dentistInfoDocs);
 
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
+        return dentistDtos;
 
-        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
-        return dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
     }
 
     public List<DentistDto> categoryDentistSaved(
-            CategoryDto categoryDto, String token
+            CategoryDto categoryDto,
+            String lastDentistId,
+            int limit,
+            String token
     ){
         String category = categoryDto.getCategory();
+        String gu = categoryDto.getGu();
 
-        log.info("{}",category);
 
-        // Null 체크
-        if (category == null) {
-            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
-        }
+        log.info("{}, {}", category, gu);
 
         String access = token.split(" ")[1];
         String resourceId = jwtUtil.getResourceId(access);
@@ -76,21 +72,26 @@ public class CategoryDentistBusiness {
 
         Double latitude = user.getLatitude();
         Double longitude = user.getLongitude();
+
         log.info("{}, {}", latitude, longitude);
 
-        // 카테고리로 dynamicInfo 정보 조회
-        List<DynamicInfoDoc> dynamicInfoList = dentistService.findByTreatCateEasy(category);
+        // Null 체크
+        if (category == null || latitude == null || longitude == null || gu == null) {
+            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
+        }
 
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoList);
 
+        CategoryLocDto categoryLocDto = CategoryLocDto.builder()
+                .category(category)
+                .gu(gu)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
 
-        // 병원 간의 거리를 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
+        List<DentistInfoDoc> dentistInfoDocs = categoryDentistService.categoryDentist(categoryLocDto, lastDentistId, limit);
+        List<DentistDto> dentistDtos = dentistInfoConverter.toDentistDtos(dentistInfoDocs);
 
-        return sortedHospitals;
+        return dentistDtos;
+
     }
-
 }

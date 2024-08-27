@@ -39,8 +39,8 @@ public class DentistConverter {
                     .dong(staticInfo.getDong())
                     .tele(staticInfo.getTele())
                     .img(staticInfo.getImg())
-                    .latitude(staticInfo.getLat())
-                    .longitude(staticInfo.getLon())
+//                    .latitude(staticInfo.getLat())
+//                    .longitude(staticInfo.getLon())
                     .subwayInfo(staticInfo.getSubwayInfo())
                     .subwayName(staticInfo.getSubwayName())
                     .dist(staticInfo.getDist())
@@ -48,23 +48,5 @@ public class DentistConverter {
         }).collect(Collectors.toList());
         return dentistDtos;
 
-    }
-    public DentistDetail toDentistDto(DynamicInfoDoc dynamicInfo, StaticInfoDoc staticInfo){
-        return DentistDetail.builder()
-                .id(staticInfo.getId())
-                .name(staticInfo.getName())
-                .addr(staticInfo.getAddr())
-                .dong(staticInfo.getDong())
-                .tele(staticInfo.getTele())
-                .img(staticInfo.getImg())
-                .latitude(staticInfo.getLat())
-                .longitude(staticInfo.getLon())
-                .timeDataMap(dynamicInfo.getTimeDataMap())
-                .category(dynamicInfo.getCategory())
-                .categoryEasy(dynamicInfo.getCategorySearch())
-                .subwayInfo(staticInfo.getSubwayInfo())
-                .subwayName(staticInfo.getSubwayName())
-                .dist(staticInfo.getDist())
-                .build();
     }
 }

@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryLocDto {
+public class LocationGuDto {
 
-    private String category;
-    private String gu;
     private Double latitude;
     private Double longitude;
+    private String gu;
 }

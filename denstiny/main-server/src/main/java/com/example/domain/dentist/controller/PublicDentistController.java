@@ -1,5 +1,7 @@
 package com.example.domain.dentist.controller;
 
+import api.Api;
+import api.Result;
 import com.example.domain.dentist.business.CategoryDentistBusiness;
 import com.example.domain.dentist.business.DentistBusiness;
 import com.example.domain.dentist.business.OpenDentistBusiness;
@@ -9,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -22,60 +23,57 @@ public class PublicDentistController {
     private final CategoryDentistBusiness categoryDentistBusiness;
     private final DentistBusiness dentistBusiness;
 
-    @GetMapping("/dentist")
-    public ResponseEntity<List<DentistDto>> personalizedDenDis(
-            @RequestParam("day") String day,
-            @RequestParam("local_time") String local_time,
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
-    ) {
-        LocalTime queryTime = LocalTime.parse(local_time);
-        PersonalizedDentLocDto requestDto = new PersonalizedDentLocDto(day, queryTime, latitude, longitude);
 
-        List<DentistDto> dentists = personalizedDentistBusiness.personalizedDentistByDis(requestDto);
-        return ResponseEntity.ok(dentists);
+    @PostMapping("/dentist")
+    public Api<List<DentistDto>> personalizedDenDis(
+            @RequestBody PersonalizedDentLocDto personalizedDentLocDto,
+            @RequestParam(required = false, name="lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
+
+    ) {
+        List<DentistDto> dentists = personalizedDentistBusiness.openPersonalDentist(personalizedDentLocDto, lastDentistId, limit);
+        return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
     }
 
-    @GetMapping("/open-dentist")
-    public ResponseEntity<List<DentistDto>> openDentist(
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
-    ) {
-        LocationDto requestDto = new LocationDto(latitude, longitude);
-
-        List<DentistDto> dentists = openDentistBusiness.openDentistNow(requestDto);
-        return ResponseEntity.ok(dentists);
+    @PostMapping("/open-dentist")
+    public Api<List<DentistDto>> findNearbyDentists(
+            @RequestBody LocationGuDto locationGuDtoDto,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit) {
+        List<DentistDto> dentists = openDentistBusiness.openDentistNow(locationGuDtoDto, lastDentistId, limit);
+        return new Api<>(new Result(200, "성공", "문연 치과 조회 성공"), dentists);
     }
 
-    @GetMapping("/cat-dentist")
-    public ResponseEntity<List<DentistDto>> categoryDentist(
-            @RequestParam("category") String category,
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
+
+
+    @PostMapping("/cat-dentist")
+    public Api<List<DentistDto>> categoryDentist(
+            @RequestBody CategoryLocDto categoryLocDto,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
     ) {
-        CategoryLocDto categoryLocDto = new CategoryLocDto(category, latitude, longitude);
-        List<DentistDto> dentists = categoryDentistBusiness.categoryDentist(categoryLocDto);
-        return ResponseEntity.ok(dentists);
+        List<DentistDto> dentists = categoryDentistBusiness.categoryDentist(categoryLocDto,lastDentistId,limit);
+        return new Api<>(new Result(200, "성공", "카테고리 치과 조회 성공"), dentists);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DentistDetail> getDentistById(
+    public Api<DentistDetail> getDentistById(
             @PathVariable("id") String id
     ) {
         DentistDetail dentist = dentistBusiness.findDentist(id);
-        return ResponseEntity.ok(dentist);
+        return new Api<>(new Result(200, "성공", "해당 치과 상세 검색 성공"), dentist);
     }
 
     // 병원 이름으로 검색
-    @GetMapping("/by-name")
-    public ResponseEntity<List<DentistDto>> getDentistsByName(
-            @RequestParam("name") String name,
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
+    @PostMapping("/by-name")
+    public Api<List<DentistDto>> getDentistsByName(
+            @RequestBody SearchNameDto searchNameDto,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
     ) {
-        SearchNameDto searchNameDto = new SearchNameDto(name, latitude, longitude);
-
-        List<DentistDto> dentists = dentistBusiness.findDentistByName(searchNameDto);
-        return ResponseEntity.ok(dentists);
+        List<DentistDto> dentists = dentistBusiness.findDentistByName(searchNameDto,lastDentistId,limit);
+        return new Api<>(new Result(200, "성공", "이름으로 병원 검색 성공"), dentists);
     }
+
+
 }
