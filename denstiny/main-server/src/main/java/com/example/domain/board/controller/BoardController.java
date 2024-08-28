@@ -8,6 +8,9 @@ import com.example.domain.board.business.BoardBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +24,11 @@ public class BoardController {
     @PostMapping("/{userId}/board")
     public ResponseEntity<String> addBoard(
             @PathVariable("userId") Long userId,
-            @RequestBody BoardRequest boardReq
+            @RequestPart(required = false, name = "images") List<MultipartFile> images,
+            @RequestPart(name = "request") BoardRequest boardReq
     ){
-        BoardResponse boardRes = boardBusiness.addBoard(boardReq, userId);
+
+        BoardResponse boardRes = boardBusiness.addBoard(boardReq, images, userId);
         return ResponseEntity.ok(boardRes.toString());
     }
 
