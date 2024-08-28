@@ -18,6 +18,7 @@ public class BoardConverter {
                     return BoardEntity.builder()
                             .title(request.getTitle())
                             .content(request.getContent())
+                            .category(request.getCategory())
                             .writer(userId)
                             .build();
                 })
@@ -28,7 +29,7 @@ public class BoardConverter {
         return Optional.ofNullable(board)
                 .map(it -> {
                     return BoardResponse.builder()
-                            .boardId(it.getId())
+                            .boardId(it.getBoardId())
                             .writer(it.getWriter())
                             .build();
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "BoardEntity is null"));
