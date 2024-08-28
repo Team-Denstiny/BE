@@ -43,6 +43,7 @@ public class DentistInfoConverter {
                     .name(dentistInfoDoc.getName())
                     .addr(dentistInfoDoc.getAddress())
                     .dong(dentistInfoDoc.getDong())
+                    .gu(dentistInfoDoc.getGu())
                     .tele(dentistInfoDoc.getTelephone())
                     .img(dentistInfoDoc.getImageUrl())
                     .subwayInfo(dentistInfoDoc.getSubwayInfo())

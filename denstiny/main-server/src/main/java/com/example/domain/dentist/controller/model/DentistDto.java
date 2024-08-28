@@ -20,6 +20,8 @@ public class DentistDto {
 
     private String dong;
 
+    private String gu;
+
     private String tele;
 
     private String img;

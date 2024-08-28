@@ -26,13 +26,13 @@ public class UserBookmarkedController {
         userBookmarkedService.addBookmarkedDentist(userId,hospitalId.getHospitalId());
         return ResponseEntity.ok("Hospital ID :" + hospitalId.getHospitalId() + " 가 찜 목록에서 추가되었습니다");
     }
-    @DeleteMapping("/{userId}/bookmark")
+    @DeleteMapping("/{userId}/bookmark/{hospitalId}")
     public ResponseEntity<String>  deleteBookmarkedDentist(
             @PathVariable("userId") Long userId,
-            @RequestBody BookmarkRequestDto hospitalId
+            @PathVariable("hospitalId") String hospitalId
     ){
-        userBookmarkedService.deleteBookmarkedDentist(userId,hospitalId.getHospitalId());
-        return ResponseEntity.ok("Hospital ID :" + hospitalId.getHospitalId() + " 가 찜 목록에서 삭제되었습니다");
+        userBookmarkedService.deleteBookmarkedDentist(userId,hospitalId);
+        return ResponseEntity.ok("Hospital ID :" +hospitalId + " 가 찜 목록에서 삭제되었습니다");
 
     }
 
