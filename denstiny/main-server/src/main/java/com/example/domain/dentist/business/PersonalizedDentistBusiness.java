@@ -96,44 +96,4 @@ public class PersonalizedDentistBusiness {
 
         return dentistDtos;
     }
-
-//
-//    public List<DentistDto> personalizedDentistBySavedDis(
-//            PersonalizedDentDto personalizedDentDto, String token
-//    ) {
-//
-//        // 검색할 요일, 시간
-//        String day = personalizedDentDto.getDay();
-//        LocalTime queryTime = personalizedDentDto.getLocalTime();
-//
-//
-//        log.info("{}, {}", day, queryTime);
-//
-//        // Null 체크
-//        if (day == null || queryTime == null) {
-//            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
-//        }
-//
-//        String access = token.split(" ")[1];
-//        String resourceId = jwtUtil.getResourceId(access);
-//        UserEntity user = userService.getUserByResourceId(resourceId);
-//
-//        String queryTimeStr = queryTime.toString();
-//
-//        List<DynamicInfoDoc> openDentists = dentistService.openDentistsByDayTime(day, queryTimeStr);
-//        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
-//
-//
-//        Double latitude = user.getLatitude();
-//        Double longitude = user.getLongitude();
-//        log.info("{}, {}", latitude, longitude);
-//
-//        // 거리 기준으로 병원 정렬
-//        List<DentistDto> sortedHospitals = dentistDtos.stream()
-//                .sorted(Comparator.comparingDouble(dto ->
-//                        DistanceUtil.calculateDistance(latitude,longitude, dto.getLatitude(), dto.getLongitude())))
-//                .collect(Collectors.toList());
-//
-//        return sortedHospitals;
-//    }
 }

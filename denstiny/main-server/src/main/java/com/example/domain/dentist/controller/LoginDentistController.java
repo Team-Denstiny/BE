@@ -7,10 +7,8 @@ import com.example.domain.dentist.business.OpenDentistBusiness;
 import com.example.domain.dentist.business.PersonalizedDentistBusiness;
 import com.example.domain.dentist.controller.model.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController

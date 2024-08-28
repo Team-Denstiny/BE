@@ -5,8 +5,6 @@ import com.example.dentist.document.DentistInfoDoc;
 import com.example.dentist.document.TimeData;
 import com.example.dentist.repository.DentistInfoRepository;
 import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.dentist.repository.DynamicInfoRepository;
-import com.example.dentist.repository.StaticInfoRepository;
 import com.example.util.TimeUtil;
 import error.ErrorCode;
 import exception.ApiException;

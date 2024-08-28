@@ -1,8 +1,6 @@
 package com.example.domain.reviewDentist.business;
 
 import annotation.Business;
-import com.example.dentist.document.DynamicInfoDoc;
-import com.example.domain.dentist.service.DentistService;
 import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.reviewDentist.controller.model.ReviewRequest;
 import com.example.domain.reviewDentist.converter.ReviewConverter;

@@ -2,8 +2,6 @@ package com.example.domain.dentist.converter;
 
 import annotation.Converter;
 import com.example.dentist.document.DentistInfoDoc;
-import com.example.dentist.document.DynamicInfoDoc;
-import com.example.dentist.document.StaticInfoDoc;
 import com.example.dentist.document.TimeData;
 import com.example.domain.dentist.controller.model.DentistDetail;
 import com.example.domain.dentist.controller.model.DentistDto;
@@ -12,7 +10,6 @@ import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Converter
