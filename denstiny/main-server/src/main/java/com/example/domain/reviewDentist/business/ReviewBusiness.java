@@ -6,10 +6,12 @@ import com.example.domain.dentist.service.DentistService;
 import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.reviewDentist.controller.model.ReviewRequest;
 import com.example.domain.reviewDentist.converter.ReviewConverter;
+import com.example.domain.reviewDentist.service.ReviewInfoService;
 import com.example.domain.reviewDentist.service.ReviewService;
 import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.reviewDentist.Document.ReviewDoc;
+import com.example.reviewDentist.Document.ReviewInfoDoc;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
@@ -24,10 +26,10 @@ import java.util.stream.Collectors;
 @Transactional
 public class ReviewBusiness {
 
+    private final ReviewInfoService reviewInfoService;
     private final ReviewService reviewService;
     private final ReviewConverter reviewConverter;
     private final UserService userService;
-    private final DentistService dentistService;
 
     // 수정 필요!!!
     // TODO dynamicInfo -> reviews 에 반영이 필요함
@@ -43,9 +45,10 @@ public class ReviewBusiness {
         reviewDoc.setDate(LocalDateTime.now());
         reviewService.saveReview(reviewDoc);
 
-        DynamicInfoDoc dynamicInfoDoc = dentistService.findDynamicInfoById(dentistId);
-        dynamicInfoDoc.getReviews().add(reviewDoc.getId());
-        dentistService.saveDynamicInfo(dynamicInfoDoc);
+
+        ReviewInfoDoc reviewInfoDocById = reviewInfoService.findReviewInfoDocById(dentistId);
+        reviewInfoDocById.getReviews().add(reviewDoc.getId());
+        reviewInfoService.saveReviewInfoDoc(reviewInfoDocById);
 
         return dentistId + "에 리뷰가 추가되었습니다.";
 
@@ -66,8 +69,8 @@ public class ReviewBusiness {
 
         reviewService.deleteById(reviewId);
 
-        // dynaimicInfo에 reviewId(ObjectId)를 삭제
-        dentistService.deleteReviews(dentistId,reviewId);
+        // reviewInfoDoc의 reviewId(ObjectId)를 삭제
+        reviewInfoService.deleteReviews(dentistId,reviewId);
 
         return dentistId + "의 " + reviewId + "번 리뷰가 성공적으로 삭제되었습니다.";
     }
@@ -98,8 +101,9 @@ public class ReviewBusiness {
      */
     public List<ReviewResponse> findReviewsByDentist(String dentistId){
 
-        DynamicInfoDoc dynamicInfoDoc = dentistService.findDynamicInfoById(dentistId);
-        List<ReviewResponse> reviewResponses = dynamicInfoDoc.getReviews()
+        ReviewInfoDoc reviewInfoDocById = reviewInfoService.findReviewInfoDocById(dentistId);
+
+        List<ReviewResponse> reviewResponses = reviewInfoDocById.getReviews()
                 .stream()
                 .map(objectId -> {
                     String stringId = objectId.toString();
