@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class BoardController {
 
-    private final BoardService boardService;
     private final BoardBusiness boardBusiness;
 
     // 게시글 생성
@@ -27,7 +26,6 @@ public class BoardController {
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
             @RequestPart(name = "request") BoardRequest boardReq
     ){
-
         BoardResponse boardRes = boardBusiness.addBoard(boardReq, images, userId);
         return ResponseEntity.ok(boardRes.toString());
     }

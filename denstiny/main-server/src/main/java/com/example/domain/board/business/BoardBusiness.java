@@ -1,9 +1,8 @@
 package com.example.domain.board.business;
 
 import annotation.Business;
-import api.Api;
 import com.example.board.BoardEntity;
-import com.example.board.BoardImageEntity;
+import com.example.board_image.BoardImageEntity;
 import com.example.domain.board.service.BoardImageService;
 import com.example.domain.board.service.BoardService;
 import com.example.domain.board.converter.BoardConverter;
@@ -13,7 +12,6 @@ import com.example.domain.board.controller.model.BoardResponse;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
@@ -28,16 +26,15 @@ public class BoardBusiness {
     private final BoardImageService boardImageService;
     private final BoardConverter boardConverter;
 
-    public BoardResponse addBoard(BoardRequest boardRequest, List<MultipartFile> images, Long userId){
+    public BoardResponse addBoard(BoardRequest boardReq, List<MultipartFile> images, Long userId){
 
-        BoardEntity board = Optional.ofNullable(boardRequest)
+        BoardEntity board = Optional.ofNullable(boardReq)
                 .map(it -> boardConverter.toBoardEntity(it, userId))
                 .map(it -> boardService.addBoard(it))
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "addBoard null point"));
 
         // findById 시 Optional 처리
         // BoardEntity boardId = boardService.getReferenceBoardId(board.getBoardId()).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "Board Id null point"));
-
         try {
             List<BoardImageEntity> list = ImageUtil.parseFileInfo(boardService.getReferenceBoardId(board.getBoardId()), images);
 
