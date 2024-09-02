@@ -1,9 +1,7 @@
 package com.example.domain.board.service;
 
-import com.example.board.BoardEntity;
-import com.example.board.BoardImageEntity;
-import com.example.board.BoardImageRepository;
-import com.example.board.BoardRepository;
+import com.example.board_image.BoardImageEntity;
+import com.example.board_image.BoardImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
