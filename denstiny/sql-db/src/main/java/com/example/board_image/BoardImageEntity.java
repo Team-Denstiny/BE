@@ -1,6 +1,7 @@
-package com.example.board;
+package com.example.board_image;
 
 import com.example.base.BaseEntity;
+import com.example.board.BoardEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
