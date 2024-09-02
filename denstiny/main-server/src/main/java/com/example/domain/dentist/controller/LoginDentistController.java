@@ -43,6 +43,18 @@ public class LoginDentistController {
         return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
     }
 
+    @PostMapping("/dentist/redis")
+    public Api<List<DentistDto>> personalizedDenDisSavedRedis(
+            @RequestBody PersonalizedDentDto personalizedDentDto,
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
+    ) {
+
+        List<DentistDto> dentists = personalizedDentistBusiness.openPersonalDentistSavedRedis(personalizedDentDto,lastDentistId,limit, token);
+        return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
+    }
+
     @PostMapping("/cat-dentist")
     public Api<List<DentistDto>> categoryDentistSaved(
             @RequestBody CategoryDto categoryDto,

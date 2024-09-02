@@ -34,6 +34,18 @@ public class PublicDentistController {
         return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
     }
 
+    @PostMapping("/dentist/redis")
+    public Api<List<DentistDto>> personalizedDenDisRedis(
+            @RequestBody PersonalizedDentLocDto personalizedDentLocDto,
+            @RequestParam(required = false, name="lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
+
+    ) {
+//        List<DentistDto> dentists = personalizedDentistBusiness.openPersonalDentistRedis(personalizedDentLocDto, lastDentistId, limit);
+        List<DentistDto> dentists = personalizedDentistBusiness.openPersonalDentistRedis(personalizedDentLocDto, lastDentistId, limit);
+        return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
+    }
+
     @PostMapping("/open-dentist")
     public Api<List<DentistDto>> findNearbyDentists(
             @RequestBody LocationGuDto locationGuDtoDto,
