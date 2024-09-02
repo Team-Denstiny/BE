@@ -2,7 +2,7 @@ package com.example.util;
 
 
 import com.example.board.BoardEntity;
-import com.example.board.BoardImageEntity;
+import com.example.board_image.BoardImageEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 

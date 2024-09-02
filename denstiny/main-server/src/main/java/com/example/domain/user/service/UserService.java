@@ -88,4 +88,9 @@ public class UserService {
         // 변경 사항 저장
         return userRepository.save(userEntity);
     }
+
+
+    public UserEntity getReferenceUserId(Long userId) {
+        return userRepository.getReferenceById(userId);
+    }
 }
