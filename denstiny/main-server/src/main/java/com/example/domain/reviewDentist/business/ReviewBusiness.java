@@ -13,6 +13,7 @@ import com.example.reviewDentist.Document.ReviewInfoDoc;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -29,8 +30,6 @@ public class ReviewBusiness {
     private final ReviewConverter reviewConverter;
     private final UserService userService;
 
-    // 수정 필요!!!
-    // TODO dynamicInfo -> reviews 에 반영이 필요함
     public String addReview(Long id, String dentistId, ReviewRequest reviewRequest) {
 
         // 로그인한 유저와, 리뷰를 적는 유저가 같은지 확인하는 로직
@@ -41,6 +40,7 @@ public class ReviewBusiness {
         ReviewDoc reviewDoc = reviewConverter.toReviewDoc(reviewRequest);
         reviewDoc.setHospitalId(dentistId);
         reviewDoc.setDate(LocalDateTime.now());
+        reviewDoc.setDepth(1);
         reviewService.saveReview(reviewDoc);
 
 
@@ -49,9 +49,8 @@ public class ReviewBusiness {
         reviewInfoService.saveReviewInfoDoc(reviewInfoDocById);
 
         return dentistId + "에 리뷰가 추가되었습니다.";
-
-
     }
+
 
     public String deleteReview(Long id, String dentistId, String reviewId){
 
@@ -65,12 +64,24 @@ public class ReviewBusiness {
             throw new ApiException(UserErrorCode.USER_NOT_AUTHORIZED, "자신이 작성한 리뷰만 삭제할 수 있습니다!!!");
         }
 
+        // 대댓글이 있으면 먼저 삭제
+        deleteReplies(reviewDoc);
+
+        // 그 다음 댓글 삭제
         reviewService.deleteById(reviewId);
 
-        // reviewInfoDoc의 reviewId(ObjectId)를 삭제
+        // 검색을 위한 reviewInfoDoc의 reviewId(ObjectId)를 삭제
         reviewInfoService.deleteReviews(dentistId,reviewId);
 
         return dentistId + "의 " + reviewId + "번 리뷰가 성공적으로 삭제되었습니다.";
+    }
+
+    // 대댓글 삭제 로직
+    private void deleteReplies(ReviewDoc parentReview) {
+        for (ObjectId commentId : parentReview.getCommentReplys()) {
+            // 대댓글을 삭제
+            reviewService.deleteById(commentId.toHexString());
+        }
     }
 
     public String updateReview(Long id, String dentistId, String reviewId, ReviewRequest reviewRequest){
