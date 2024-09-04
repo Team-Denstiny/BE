@@ -1,9 +1,7 @@
 package com.example.domain.board.controller;
 
-
-import com.example.domain.board.controller.model.BoardRequest;
-import com.example.domain.board.controller.model.BoardResponse;
-import com.example.domain.board.service.BoardService;
+import com.example.domain.board.controller.model.BoardAddRequest;
+import com.example.domain.board.controller.model.BoardAddResponse;
 import com.example.domain.board.business.BoardBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class BoardController {
-
     private final BoardBusiness boardBusiness;
 
     // 게시글 생성
@@ -24,10 +21,18 @@ public class BoardController {
     public ResponseEntity<String> addBoard(
             @PathVariable("userId") Long userId,
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
-            @RequestPart(name = "request") BoardRequest boardReq
+            @RequestPart(name = "request") BoardAddRequest boardAddReq
     ){
-        BoardResponse boardRes = boardBusiness.addBoard(boardReq, images, userId);
+        BoardAddResponse boardRes = boardBusiness.addBoard(boardAddReq, images, userId);
         return ResponseEntity.ok(boardRes.toString());
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/{userId}/board/{boardId}")
+    public ResponseEntity<String> deleteBoard(
+            @PathVariable("userId") Long userId,
+            @PathVariable("boardId") Long boardId) {
+        return ResponseEntity.ok(boardBusiness.deleteBoard(userId, boardId));
     }
 
 //    // 게시글 수정
@@ -38,10 +43,4 @@ public class BoardController {
 //                .orElseGet(() -> ResponseEntity.notFound().build());
 //    }
 //
-//    // 게시글 삭제
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
-//        boardService.deleteBoard(id);
-//        return ResponseEntity.noContent().build();
-//    }
 }
