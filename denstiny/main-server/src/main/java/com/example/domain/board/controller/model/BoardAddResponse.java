@@ -9,7 +9,7 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardResponse {
+public class BoardAddResponse {
     private Long boardId;
     private Long writer;
 }

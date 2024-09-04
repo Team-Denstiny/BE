@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardRequest {
+public class BoardAddRequest {
     private String title;
     private String content;
     private Integer category;

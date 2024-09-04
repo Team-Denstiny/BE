@@ -26,6 +26,10 @@ public class BoardService {
         return boardRepository.getReferenceById(boardId);
     }
 
+    public void deleteBoard(BoardEntity board) {
+        boardRepository.delete(board);
+    }
+
 //    // 게시글 프록시 객체 ID 조회 - findById
 //    public Optional<BoardEntity> getReferenceBoardId(Long boardId) {
 //        return boardRepository.findById(boardId);

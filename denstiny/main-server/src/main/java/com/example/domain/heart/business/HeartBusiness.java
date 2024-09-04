@@ -25,7 +25,6 @@ public class HeartBusiness {
     private final UserService userService;
     private final BoardService boardService;
     private final HeartService heartService;
-
     private final BoardImageService boardImageService;
     private final HeartConverter heartConverter;
 
@@ -64,6 +63,6 @@ public class HeartBusiness {
 
         // 4. 존재하면, 해당 좋아요 삭제
         heartService.deleteHeart(heart);
-        return "성공적으로 유저" + heart.getUser().getUserId() + "이 게시글 번호" + heart.getBoard().getBoardId() + " 게시글을 삭제하였습니다.";
+        return "성공적으로 유저" + heart.getUser().getUserId() + "이 게시글 번호" + heart.getBoard().getBoardId() + " 게시글의 좋아요를 삭제하였습니다.";
     }
 }
