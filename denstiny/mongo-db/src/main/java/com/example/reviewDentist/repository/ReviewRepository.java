@@ -14,4 +14,9 @@ public interface ReviewRepository extends MongoRepository<ReviewDoc,String> {
     List<ReviewDoc> findByUserId(Long userId);
     // 특정 사용자(user_id)와 hospital_id로 ReviewDoc을 찾기
     List<ReviewDoc> findByUserIdAndHospitalId(Long userId, String hospitalId);
+
+    List<ReviewDoc> findByIdIn(List<ObjectId> ids);
+
+    // 리뷰의 대댓글의 ObjectId를 통해 댓글을 찾는 메서드
+    ReviewDoc findFirstByCommentReplysContaining(ObjectId commentId);
 }
