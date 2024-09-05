@@ -2,17 +2,21 @@ package com.example.domain.board.business;
 
 import annotation.Business;
 import com.example.board.BoardEntity;
+import com.example.board_dental_type.BoardDentalTypeEntity;
 import com.example.board_image.BoardImageEntity;
+import com.example.domain.board.converter.BoardDentalTypeConverter;
+import com.example.domain.board.service.BoardDentalTypeService;
 import com.example.domain.board.service.BoardImageService;
 import com.example.domain.board.service.BoardService;
 import com.example.domain.board.converter.BoardConverter;
-import com.example.util.ImageUtil;
+import com.example.util.BoardImageUtil;
 import com.example.domain.board.controller.model.BoardAddRequest;
 import com.example.domain.board.controller.model.BoardAddResponse;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
 import java.util.List;
@@ -25,6 +29,8 @@ public class BoardBusiness {
     private final BoardService boardService;
     private final BoardImageService boardImageService;
     private final BoardConverter boardConverter;
+    private final BoardDentalTypeService boardDentalTypeService;
+    private final BoardDentalTypeConverter boardDentalTypeConverter;
 
     public BoardAddResponse addBoard(BoardAddRequest boardReq, List<MultipartFile> images, Long userId){
         BoardEntity board = Optional.ofNullable(boardReq)
@@ -35,7 +41,7 @@ public class BoardBusiness {
         // findById 시 Optional 처리
         // BoardEntity boardId = boardService.getReferenceBoardId(board.getBoardId()).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "Board Id null point"));
         try {
-            List<BoardImageEntity> list = ImageUtil.parseFileInfo(boardService.getReferenceBoardId(board.getBoardId()), images);
+            List<BoardImageEntity> list = BoardImageUtil.parseFileInfo(boardService.getReferenceBoardId(board.getBoardId()), images);
 
             if (list.isEmpty()){
             }
@@ -48,6 +54,13 @@ public class BoardBusiness {
 
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+
+        if(boardReq.getCategory() == 1 && ObjectUtils.isEmpty(boardReq.getDentalType())) {
+            for(String boardDentalType : boardReq.getDentalType()) {
+                BoardDentalTypeEntity boardDentalTypeEntity = boardDentalTypeConverter.toBoardDentalTypeEntity(boardService.getReferenceBoardId(board.getBoardId()), boardDentalType);
+                boardDentalTypeService.addBoardDentalType(boardDentalTypeEntity);
+            }
         }
 
         return boardConverter.toBoardResponse(board);
