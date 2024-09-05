@@ -1,8 +1,13 @@
 package com.example.domain.board.controller;
 
+import api.Api;
+import api.Result;
 import com.example.domain.board.controller.model.BoardAddRequest;
 import com.example.domain.board.controller.model.BoardAddResponse;
 import com.example.domain.board.business.BoardBusiness;
+import com.example.domain.user.controller.model.UserResponse;
+import com.example.domain.user.controller.model.UserUpdateRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +40,14 @@ public class BoardController {
         return ResponseEntity.ok(boardBusiness.deleteBoard(userId, boardId));
     }
 
-//    // 게시글 수정
-//    @PutMapping("/{id}")
-//    public ResponseEntity<BoardEntity> updateBoard(@PathVariable Long id, @RequestBody BoardEntity updatedBoard) {
-//        Optional<BoardEntity> board = boardService.updateBoard(id, updatedBoard);
-//        return board.map(ResponseEntity::ok)
-//                .orElseGet(() -> ResponseEntity.notFound().build());
+    // 게시글 수정
+//    @PatchMapping("/{userId]/board")
+//    public ResponseEntity<String> updateBoard(
+//            @PathVariable("userId") Long userId,
+//            @RequestPart(required = false, name = "images") List<MultipartFile> images,
+//            @RequestPart(name = "request") BoardAddRequest boardAddReq
+//    ){
+//        BoardReponse board = boardBusiness.updateBoard();
+//        return ResponseEntity.ok(board.toString());
 //    }
-//
 }

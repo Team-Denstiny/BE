@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.io.File;
 
 
-public class ImageUtil {
+public class BoardImageUtil {
     public static List<BoardImageEntity> parseFileInfo(
             BoardEntity board,
             List<MultipartFile> multipartFiles
