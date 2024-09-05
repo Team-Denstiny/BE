@@ -1,23 +1,20 @@
 package com.example.domain.dentist.service;
 
-import com.example.document.DynamicInfoDoc;
-import com.example.document.StaticInfoDoc;
-import com.example.domain.dentist.controller.model.DentistDetail;
-import com.example.domain.dentist.controller.model.DentistDto;
+import com.example.dentist.document.DentistInfoDoc;
+import com.example.dentist.repository.DentistInfoRepository;
 import com.example.domain.dentist.controller.model.SearchNameDto;
-import com.example.domain.dentist.converter.DentistConverter;
-import com.example.repository.DynamicInfoRepository;
-import com.example.repository.StaticInfoRepository;
-import com.example.util.DistanceUtil;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,47 +24,45 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DentistService {
 
-    private final DynamicInfoRepository dynamicInfoRepository;
-    private final StaticInfoRepository staticInfoRepository;
-    private final DentistConverter dentistConverter;
+    private final DentistInfoRepository dentistInfoRepository;
+    private final MongoTemplate mongoTemplate;
 
-    // 병원 상세 페이지
-    public DentistDetail findDentist(String id){
 
-        log.info("id = {}",id);
-
-        DynamicInfoDoc dynamicInfoDoc = dynamicInfoRepository
+    public DentistInfoDoc findDentistInfoById(String id){
+        return dentistInfoRepository
                 .findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
-
-        StaticInfoDoc staticInfoDoc = staticInfoRepository
-                .findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
-
-        return dentistConverter.toDentistDto(dynamicInfoDoc, staticInfoDoc);
-
     }
 
-    // 병원 이름으로 검색 -> 근거리로 병원 정렬
-    public List<DentistDto> findDentistByName(SearchNameDto searchNameDto){
-
+    public List<DentistInfoDoc> findByNameContaining(SearchNameDto searchNameDto,String lastDentistId, int limit) {
+        // DTO에서 이름, 위도, 경도 추출
         String name = searchNameDto.getName();
-        Double latitude = searchNameDto.getLatitude();
-        Double longitude = searchNameDto.getLongitude();
+        double longitude = searchNameDto.getLongitude();
+        double latitude = searchNameDto.getLatitude();
 
-        log.info("search = {}", name);
+        Query query = new Query();
 
-        List<DynamicInfoDoc> dynamicInfoDocs = dynamicInfoRepository.findByNameContaining(name);
+        query.addCriteria(Criteria.where("name").regex(name, "i")); // 대소문자 구분 없이 검색
+        query.addCriteria(Criteria.where("location")
+                .nearSphere(new Point(longitude, latitude)));
 
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(dynamicInfoDocs);
+        // 쿼리를 실행하고 결과 반환
+        List<DentistInfoDoc> allDentists = mongoTemplate.find(query, DentistInfoDoc.class);
 
-        // 현재 위치와 병원 간의 거리를 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
+        int startIndex = 0;
+        if (lastDentistId != null) {
+            for (int i = 0; i < allDentists.size(); i++) {
+                if (allDentists.get(i).getId().equals(lastDentistId)) {
+                    startIndex = i + 1; // 다음 병원부터 시작
+                    break;
+                }
+            }
+        }
+
+        return allDentists.stream()
+                .skip(startIndex)
+                .limit(limit)
                 .collect(Collectors.toList());
-
-        return sortedHospitals;
 
     }
 }

@@ -13,7 +13,7 @@ public enum UserErrorCode implements ErrorCodeIfs {
     USER_NOT_FOUND(400,1401,"사용자를 찾을 수 없음"),
     DUPLICATE_EMAIL(400,1402,"Email이 중복됨"),
     DUPLICATE_NICKNAME(400,1403,"nickname이 중복됨"),
-
+    USER_NOT_AUTHORIZED(403, 1404, "유저 권한 없음")
     ;
 
     private final Integer httpStatusCode; // 상응 하는 http error code

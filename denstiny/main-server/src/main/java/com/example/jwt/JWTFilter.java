@@ -1,19 +1,9 @@
 package com.example.jwt;
 
-import api.Result;
-import com.example.domain.user.controller.model.CustomUserDetails;
-import com.example.error.TokenErrorCode;
-import com.example.user.UserEntity;
-import com.example.user.UserRepository;
-import com.example.user.enums.UserRole;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static com.example.constant.TokenHeaderConstant.*;
+
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +11,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import com.example.domain.user.controller.model.CustomUserDetails;
+import com.example.error.TokenErrorCode;
+import com.example.user.UserEntity;
+import com.example.user.UserRepository;
+import com.example.user.enums.UserRole;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
-import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
+import api.Result;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String authorization = request.getHeader(HEADER_AUTHORIZATION);
 
         // access키에 담긴 토큰 꺼내기
-        if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX)){
+        if (authorization  == null || !authorization.startsWith(TOKEN_PREFIX) || request.getRequestURI().equals("/api/users/reissue")){
 //            log.info("토큰이 없거나 Bearer로 시작하지 않습니다.");
             filterChain.doFilter(request,response);
 
@@ -49,7 +50,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
 
         String accessToken = getAccessToken(authorization);
-
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
         try {
             jwtUtil.isExpired(accessToken);

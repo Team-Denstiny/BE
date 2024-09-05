@@ -1,25 +1,28 @@
 package com.example.domain.user.controller;
 
-import api.Api;
-import api.Result;
+import static com.example.constant.TokenHeaderConstant.*;
+
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.domain.user.service.ReissueService;
+import com.example.error.TokenErrorCode;
 import com.example.jwt.JWTUtil;
 import com.example.refresh.RefreshEntity;
 import com.example.refresh.RefreshRepository;
+
+import api.Api;
+import api.Result;
+import exception.ApiException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
-
-import static com.example.constant.TokenHeaderConstant.HEADER_AUTHORIZATION;
-import static com.example.constant.TokenHeaderConstant.TOKEN_PREFIX;
 
 @Slf4j
 @RestController
@@ -34,37 +37,35 @@ public class ReissueController {
     public Api<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = reissueService.getRefreshToken(request);
+        log.info("refresh token 확인 : {}", refresh);
 
         if (refresh == null) {
-            Result result = new Result(400, "refresh token null", "실패");
-            return new Api<>(result, null);
+            throw new ApiException(TokenErrorCode.NULL_REFRESH_TOKEN, "refresh token이 없습니다");
         }
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            Result result = new Result(400, "refresh token expired", "실패");
-            return new Api<>(result, null);
+            throw new ApiException(TokenErrorCode.EXPIRED_REFRESH_TOKEN, "refresh token이 만료되었습니다");
         }
 
         // 토큰이 refresh인지 확인(발급시 페이로드에 명시되어 있다)
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-            Result result = new Result(400, "invalid refresh token", "실패");
-            return new Api<>(result, null);
+            throw new ApiException(TokenErrorCode.INVALID_REFRESH_TOKEN, "refresh token이 유효하지 않습니다");
         }
 
         // DB에 refreshToken이 저장되어 있는지 확인
         // TODO Redis로 변경된다면 수정되어야 하는 부분
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        log.info("Exist? : {}",isExist);
+        log.info("Exist : {}",isExist);
         if (!isExist){
-            Result result = new Result(400, "invalid refresh token", "실패");
-            return new Api<>(result, null);
+            throw new ApiException(TokenErrorCode.REFRESH_TOKEN_EXCEPTION, "refresh token이 db에 저장되지 않았습니다");
         }
 
         String resourceId = jwtUtil.getResourceId(refresh);
         String role = jwtUtil.getRole(refresh);
+        log.info("resourceId : {}, role : {}", resourceId, role);
 
         // 새로운 JWT 생성
         String newAccess = jwtUtil.createJwt("access", resourceId, role, 600000L);
@@ -75,11 +76,12 @@ public class ReissueController {
         // TODO : Redis로 변경시  수정해야 하는 부분
 
         refreshRepository.deleteByRefresh(refresh);
+        deleteRefreshCookie(response);
         addRefreshEntity(resourceId, newRefresh, 96400000L);
 
         // 응답 헤더 설정
         response.setStatus(HttpStatus.OK.value());
-        response.setHeader(HEADER_AUTHORIZATION, TOKEN_PREFIX + newAccess);
+        response.setHeader(HEADER_AUTHORIZATION,  newAccess); // 이 부분에서 prefix부분 삭제 : bearer bearer
         response.addCookie(createCookie("refresh", newRefresh));
 
         // Result 및 Api 객체 생성
@@ -96,6 +98,13 @@ public class ReissueController {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void deleteRefreshCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refresh", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
     private void addRefreshEntity(String resourceId, String refresh, Long expiredMs) {
 

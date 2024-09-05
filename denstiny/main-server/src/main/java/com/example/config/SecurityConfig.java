@@ -1,13 +1,8 @@
 package com.example.config;
 
-import com.example.jwt.*;
-import com.example.oauth2.handler.CustomSuccessHandler;
-import com.example.oauth2.service.CustomOAuth2UserService;
-import com.example.refresh.RefreshRepository;
-import com.example.user.UserRepository;
-import com.example.user.enums.UserRole;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,8 +17,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import com.example.jwt.AuthorizationFilter;
+import com.example.jwt.CustomLogoutFilter;
+import com.example.jwt.JWTFilter;
+import com.example.jwt.JWTUtil;
+import com.example.jwt.LoginFilter;
+import com.example.oauth2.handler.CustomSuccessHandler;
+import com.example.oauth2.service.CustomOAuth2UserService;
+import com.example.refresh.RefreshRepository;
+import com.example.user.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Configuration
@@ -60,10 +65,7 @@ public class SecurityConfig {
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                 configuration.setMaxAge(3600L);
-
-                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
+                configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
                 return configuration;
                 }))
                 .csrf((auth) -> auth.disable())
@@ -75,7 +77,7 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue","api/users/check-nickname","api/users/check-email").permitAll()
+                        .requestMatchers("/api/login/endpoint","/api/users/login", "/api/users/register", "/api/users/reissue","api/users/check-nickname","api/users/check-email").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTFilter(jwtUtil,objectMapper,userRepository), OAuth2LoginAuthenticationFilter.class)

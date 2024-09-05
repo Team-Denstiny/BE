@@ -1,6 +1,6 @@
-package com.example.repository;
+package com.example.dentist.repository;
 
-import com.example.document.DentCodeDoc;
+import com.example.dentist.document.DentCodeDoc;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

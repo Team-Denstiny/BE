@@ -57,6 +57,13 @@ public class UserService {
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "pk로 회원을 찾을 수 없음"));
         return userEntity;
     }
+    public UserEntity getUserByResourceId(String resourceId){
+        return userRepository.findByResourceId(resourceId);
+    }
+
+    public UserEntity saveUser(UserEntity userEntity){
+        return userRepository.save(userEntity);
+    }
 
     public UserEntity updateUser(Long userId, UserUpdateRequest request) {
         UserEntity userEntity = userRepository.findById(userId)
@@ -88,7 +95,6 @@ public class UserService {
         // 변경 사항 저장
         return userRepository.save(userEntity);
     }
-
 
     public UserEntity getReferenceUserId(Long userId) {
         return userRepository.getReferenceById(userId);

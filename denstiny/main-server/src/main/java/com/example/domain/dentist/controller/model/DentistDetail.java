@@ -1,6 +1,6 @@
 package com.example.domain.dentist.controller.model;
 
-import com.example.document.TimeDataDoc;
+import com.example.dentist.document.TimeData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +14,12 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 public class DentistDetail {
-    private String id;
 
     private String name;
 
     private String addr;
+
+    private String gu;
 
     private String dong;
 
@@ -26,21 +27,14 @@ public class DentistDetail {
 
     private String img;
 
-    private Double latitude;
-
-    private Double longitude;
-
     private String subwayInfo;
 
     private String subwayName;
 
     private Integer dist;
 
-    private Double score;
-
-    private Integer reviewCnt;
-
-    private Map<String, TimeDataDoc> timeDataMap;
+    private Map<String, TimeData> timeDataMap;
 
     private List<String> category;
+
 }

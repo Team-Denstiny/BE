@@ -1,119 +1,62 @@
 package com.example.domain.dentist.service;
 
-import com.example.document.DynamicInfoDoc;
-import com.example.domain.dentist.controller.model.DentistDto;
-import com.example.domain.dentist.controller.model.PersonalizedDentDto;
+import com.example.dentist.document.DentistInfoDoc;
 import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
-import com.example.domain.dentist.converter.DentistConverter;
-import com.example.jwt.JWTUtil;
-import com.example.repository.DynamicInfoRepository;
-import com.example.user.UserEntity;
-import com.example.user.UserRepository;
-import com.example.util.DistanceUtil;
-import error.ErrorCode;
-import exception.ApiException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-@Service
 @Slf4j
-@Transactional
-@AllArgsConstructor
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PersonalizedDentistService {
 
-    private final DynamicInfoRepository dynamicInfoRepository;
-    private final DentistConverter dentistConverter;
-    private final UserRepository userRepository;
-    private final JWTUtil jwtUtil;
+    private final MongoTemplate mongoTemplate;
 
-    public List<DentistDto> personalizedDentistByDis(
-            PersonalizedDentLocDto personalizedDentLocDto
-    ) {
+    public List<DentistInfoDoc> openDentist(PersonalizedDentLocDto personalizedDentLocDto, String lastDentistId, int limit) {
 
-        // 검색할 요일, 시간, 위도, 경도
-        String day = personalizedDentLocDto.getDay();
-        LocalTime queryTime = personalizedDentLocDto.getLocalTime();
-        Double latitude = personalizedDentLocDto.getLatitude();
         Double longitude = personalizedDentLocDto.getLongitude();
+        Double latitude = personalizedDentLocDto.getLatitude();
 
-        log.info("{}, {} , {}, {}", day, queryTime, latitude, longitude);
+        String day = personalizedDentLocDto.getDay();
+        String currentTimeStr = personalizedDentLocDto.getLocalTime().toString();
+        String gu = personalizedDentLocDto.getGu();
 
-        // Null 체크
-        if (day == null || queryTime == null || latitude == null || longitude == null) {
-            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("timeInfo." + day + ".work_time.0").lte(currentTimeStr));
+        query.addCriteria(Criteria.where("timeInfo." + day + ".work_time.1").gte(currentTimeStr));
+        query.addCriteria(Criteria.where("timeInfo." + day + ".description").not().regex("휴무"));
+        query.addCriteria(Criteria.where("gu").regex(gu));
+        query.addCriteria(Criteria.where("location")
+                .nearSphere(new Point(longitude,latitude)));
+
+        // lastDentistId가 있는 경우, 시작 인덱스 설정
+        List<DentistInfoDoc> allDentists = mongoTemplate.find(query, DentistInfoDoc.class);
+
+        int startIndex = 0;
+        if (lastDentistId != null) {
+            for (int i = 0; i < allDentists.size(); i++) {
+                if (allDentists.get(i).getId().equals(lastDentistId)) {
+                    startIndex = i + 1; // 다음 병원부터 시작
+                    break;
+                }
+            }
         }
 
-        String queryTimeStr = queryTime.toString();
-
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
-
-
-        // 거리 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude, longitude, dto.getLatitude(), dto.getLongitude())))
+        // 페이지네이션된 결과 반환
+        return allDentists.stream()
+                .skip(startIndex)
+                .limit(limit)
                 .collect(Collectors.toList());
-
-        return sortedHospitals;
     }
 
-
-
-    public List<DentistDto> personalizedDentistByDisSaved(
-            PersonalizedDentDto personalizedDentDto, String token
-    ) {
-
-        // 검색할 요일, 시간
-        String day = personalizedDentDto.getDay();
-        LocalTime queryTime = personalizedDentDto.getLocalTime();
-
-
-        log.info("{}, {}", day, queryTime);
-
-        // Null 체크
-        if (day == null || queryTime == null) {
-            throw new ApiException(ErrorCode.NULL_POINT, "DTO 필드 값이 null입니다.");
-        }
-
-        String access = token.split(" ")[1];
-        String resourceId = jwtUtil.getResourceId(access);
-        UserEntity user = userRepository.findByResourceId(resourceId);
-
-        String queryTimeStr = queryTime.toString();
-
-        List<DynamicInfoDoc> openDentists = dynamicInfoRepository.findOpenDentists(day, queryTimeStr);
-        List<DentistDto> dentistDtos = dentistConverter.toDentistDtos(openDentists);
-
-
-        Double latitude = user.getLatitude();
-        Double longitude = user.getLongitude();
-        log.info("{}, {}", latitude, longitude);
-
-        // 거리 기준으로 병원 정렬
-        List<DentistDto> sortedHospitals = dentistDtos.stream()
-                .sorted(Comparator.comparingDouble(dto ->
-                        DistanceUtil.calculateDistance(latitude,longitude, dto.getLatitude(), dto.getLongitude())))
-                .collect(Collectors.toList());
-
-        return sortedHospitals;
-    }
 }
-
-
-
-
-
-
-
-
-
-
-

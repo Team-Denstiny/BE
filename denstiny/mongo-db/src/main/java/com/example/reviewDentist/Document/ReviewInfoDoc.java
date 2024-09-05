@@ -1,26 +1,26 @@
-package com.example.document;
+package com.example.reviewDentist.Document;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "dentCode")
+import java.util.List;
+
+@Document(collection = "reviewInfo")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Data
-public class DentCodeDoc {
-    @Id
-    private String _id;
+public class ReviewInfoDoc {
 
-    @Field("id")
+    @Id
     private String id;
 
-    @Field("name")
-    private String name;
-
-    @Field("addr")
-    private String addr;
+    @Field("reviews")
+    private List<ObjectId> reviews;
 }

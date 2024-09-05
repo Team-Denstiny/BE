@@ -1,6 +1,12 @@
 package com.example.jwt;
 
+import java.io.IOException;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.GenericFilterBean;
+
 import com.example.refresh.RefreshRepository;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,10 +16,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.filter.GenericFilterBean;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 @RequiredArgsConstructor
+@Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
@@ -25,15 +31,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
-        // 문자열 중간에 /logout 이 없으면 logoutFilter 통과!
+        // 문자열 중간에 api/public/logout 이 없으면 logoutFilter 통과!
         String requestUri = request.getRequestURI();
-        if (!requestUri.matches(".*\\/logout$")) {
+        if (!requestUri.matches(".*\\/api\\/public\\/logout$")) {
 
             filterChain.doFilter(request, response);
             return;
         }
-
-        // 문자열 중간에 /logout이 있는 경우
 
         String requestMethod = request.getMethod();
         if (!requestMethod.equals("POST")) {
@@ -42,22 +46,19 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        // 문자열 중간에 /logout 이 있고 + POST 방식인 경우
-
-        //get refresh token
+        // 문자열 중간에 api/public/logout 이 있고 + POST 방식인 경우
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+        log.info("Cookie 상태 (fuck) : " + cookies.toString());
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
-
                 refresh = cookie.getValue();
             }
         }
 
         //refresh null check
         if (refresh == null) {
-
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -66,8 +67,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -75,8 +74,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -84,13 +81,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        //로그아웃 진행
         //Refresh 토큰 DB에서 제거
         refreshRepository.deleteByRefresh(refresh);
 
@@ -98,11 +92,29 @@ public class CustomLogoutFilter extends GenericFilterBean {
         Cookie cookie = new Cookie("refresh", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        log.info("Set-Cookie 추적 로그 : PATH : {}", cookie.getPath());
+
+        SecurityContextHolder.clearContext();
+        
+        //Junhyeong Logic 추가 => Cache 방지 헤더 추가
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
+
+        log.info("로그 아웃 되었습니다");
+
+        //Junhyeong Logic 추가 => Cache 방지 헤더 추가
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
 
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
 
         // TODO 로그인되지 않은 메인페이지로 이동
+        //response.sendRedirect( "http://localhost:5173/");
     }
 
 }
