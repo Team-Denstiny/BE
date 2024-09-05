@@ -59,4 +59,7 @@ public class CustomOAuth2User implements OAuth2User {
     public String getResourceId(){
         return userDTO.getResourceId();
     }
+    public boolean isNewUser() {
+        return userDTO.getIsNewUser();
+    }
 }

@@ -21,5 +21,7 @@ public class UserDTO {
     private String resourceName;
     private String resourceId;
     private String profileImg;
+    // 회원가입인지 확인하는 필드
+    private Boolean isNewUser;
 
 }

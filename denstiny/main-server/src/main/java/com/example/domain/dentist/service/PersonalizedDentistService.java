@@ -1,15 +1,8 @@
 package com.example.domain.dentist.service;
 
 import com.example.dentist.document.DentistInfoDoc;
-import com.example.dentist.repository.DentistInfoRepository;
-import com.example.domain.dentist.controller.model.SearchNameDto;
-import error.ErrorCode;
-import exception.ApiException;
+import com.example.domain.dentist.controller.model.PersonalizedDentLocDto;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,35 +11,35 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class DentistService {
+public class PersonalizedDentistService {
 
-    private final DentistInfoRepository dentistInfoRepository;
     private final MongoTemplate mongoTemplate;
 
+    public List<DentistInfoDoc> openDentist(PersonalizedDentLocDto personalizedDentLocDto, String lastDentistId, int limit) {
 
-    public DentistInfoDoc findDentistInfoById(String id){
-        return dentistInfoRepository
-                .findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "id로 병원을 찾을 수 없습니다"));
-    }
+        Double longitude = personalizedDentLocDto.getLongitude();
+        Double latitude = personalizedDentLocDto.getLatitude();
 
-    public List<DentistInfoDoc> findByNameContaining(SearchNameDto searchNameDto,String lastDentistId, int limit) {
-        // DTO에서 이름, 위도, 경도 추출
-        String name = searchNameDto.getName();
-        double longitude = searchNameDto.getLongitude();
-        double latitude = searchNameDto.getLatitude();
+        String day = personalizedDentLocDto.getDay();
+        String currentTimeStr = personalizedDentLocDto.getLocalTime().toString();
+        String gu = personalizedDentLocDto.getGu();
 
         Query query = new Query();
 
-        query.addCriteria(Criteria.where("name").regex(name, "i")); // 대소문자 구분 없이 검색
+        query.addCriteria(Criteria.where("timeInfo." + day + ".work_time.0").lte(currentTimeStr));
+        query.addCriteria(Criteria.where("timeInfo." + day + ".work_time.1").gte(currentTimeStr));
+        query.addCriteria(Criteria.where("timeInfo." + day + ".description").not().regex("휴무"));
+        query.addCriteria(Criteria.where("gu").regex(gu));
         query.addCriteria(Criteria.where("location")
-                .nearSphere(new Point(longitude, latitude)));
+                .nearSphere(new Point(longitude,latitude)));
 
-        // 쿼리를 실행하고 결과 반환
+        // lastDentistId가 있는 경우, 시작 인덱스 설정
         List<DentistInfoDoc> allDentists = mongoTemplate.find(query, DentistInfoDoc.class);
 
         int startIndex = 0;
@@ -59,10 +52,11 @@ public class DentistService {
             }
         }
 
+        // 페이지네이션된 결과 반환
         return allDentists.stream()
                 .skip(startIndex)
                 .limit(limit)
                 .collect(Collectors.toList());
-
     }
+
 }

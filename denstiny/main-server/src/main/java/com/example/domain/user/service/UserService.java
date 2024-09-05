@@ -61,6 +61,10 @@ public class UserService {
         return userRepository.findByResourceId(resourceId);
     }
 
+    public UserEntity saveUser(UserEntity userEntity){
+        return userRepository.save(userEntity);
+    }
+
     public UserEntity updateUser(Long userId, UserUpdateRequest request) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "update 회원을 찾을 수 없음"));

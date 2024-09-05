@@ -1,5 +1,7 @@
 package com.example.domain.reviewDentist.controller;
 
+import api.Api;
+import api.Result;
 import com.example.domain.reviewDentist.business.ReviewBusiness;
 import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import lombok.AllArgsConstructor;
@@ -19,9 +21,10 @@ public class PublicReviewController {
     private final ReviewBusiness reviewBusiness;
 
     @GetMapping("/review/{hospitalId}")
-    public ResponseEntity<List<ReviewResponse>> findReviewsByHospitalId(
+    public Api<List<ReviewResponse>> findReviewsByHospitalId(
             @PathVariable("hospitalId") String hospitalId
-    ){
-        return new ResponseEntity<>(reviewBusiness.findReviewsByDentist(hospitalId), HttpStatus.OK);
+    ) {
+        List<ReviewResponse> reviews = reviewBusiness.findReviewsByDentist(hospitalId);
+        return new Api<>(new Result(200, "병원 id : " + hospitalId+" 에 대한 리뷰 조회 성공", "성공"), reviews);
     }
 }

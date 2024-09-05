@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
 
     private String category;
+    private String gu;
 }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Field;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor
@@ -20,17 +20,17 @@ public class DentistDto {
 
     private String dong;
 
+    private String gu;
+
     private String tele;
 
     private String img;
-
-    private Double latitude;
-
-    private Double longitude;
 
     private String subwayInfo;
 
     private String subwayName;
 
     private Integer dist;
+
+    private List<String> todayWork;
 }

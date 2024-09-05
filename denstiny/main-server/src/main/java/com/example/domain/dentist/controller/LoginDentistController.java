@@ -1,14 +1,14 @@
 package com.example.domain.dentist.controller;
 
+import api.Api;
+import api.Result;
 import com.example.domain.dentist.business.CategoryDentistBusiness;
 import com.example.domain.dentist.business.OpenDentistBusiness;
 import com.example.domain.dentist.business.PersonalizedDentistBusiness;
 import com.example.domain.dentist.controller.model.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -21,33 +21,36 @@ public class LoginDentistController {
     private final CategoryDentistBusiness categoryDentistBusiness;
 
 
-    @GetMapping("/dentist")
-    public ResponseEntity<List<DentistDto>> personalizedDenDisSaved(
-            @RequestParam("day") String day,
-            @RequestParam("local_time") String local_time,
-            @RequestHeader("Authorization") String token
-    ) {
-        LocalTime queryTime = LocalTime.parse(local_time);
-        PersonalizedDentDto personalizedDentistDto = new PersonalizedDentDto(day, queryTime);
-
-        List<DentistDto> dentists = personalizedDentistBusiness.personalizedDentistBySavedDis(personalizedDentistDto, token);
-        return ResponseEntity.ok(dentists);
-    }
-
     @GetMapping("/open-dentist")
-    public List<DentistDto> openDentistSaved(
-            @RequestHeader("Authorization") String token
-    ){
-        return openDentistBusiness.openDentistSavedNow(token);
+    public Api<List<DentistDto>> findNearbyDentists(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false, name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5", name = "limit") int limit) {
+
+        List<DentistDto> dentists = openDentistBusiness.openDentistSaved(token, lastDentistId, limit);
+        return new Api<>(new Result(200, "성공", "문연 치과 조회 성공"), dentists);
     }
 
-    @GetMapping("/cat-dentist")
-    public ResponseEntity<List<DentistDto>> categoryDentistSaved(
-            @RequestParam("category") String category,
-            @RequestHeader("Authorization") String token
+    @PostMapping("/dentist")
+    public Api<List<DentistDto>> personalizedDenDisSaved(
+            @RequestBody PersonalizedDentDto personalizedDentDto,
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
     ) {
-        CategoryDto categoryDto = new CategoryDto(category);
-        List<DentistDto> dentists = categoryDentistBusiness.categoryDentistSaved(categoryDto, token);
-        return ResponseEntity.ok(dentists);
+
+        List<DentistDto> dentists = personalizedDentistBusiness.openPersonalDentistSaved(personalizedDentDto,lastDentistId,limit, token);
+        return new Api<>(new Result(200, "성공", "특정 날,시간에 문연 치과 조회 성공"), dentists);
+    }
+
+    @PostMapping("/cat-dentist")
+    public Api<List<DentistDto>> categoryDentistSaved(
+            @RequestBody CategoryDto categoryDto,
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false,name = "lastDentistId") String lastDentistId,
+            @RequestParam(defaultValue = "5",name = "limit") int limit
+    ) {
+        List<DentistDto> dentists = categoryDentistBusiness.categoryDentistSaved(categoryDto,lastDentistId,limit,token);
+        return new Api<>(new Result(200, "성공", "카테고리 치과 조회 성공"), dentists);
     }
 }

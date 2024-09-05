@@ -1,5 +1,7 @@
 package com.example.domain.user_bookmarked.controller;
 
+import api.Api;
+import api.Result;
 import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.user_bookmarked.business.UserBookmarkedBusiness;
 import com.example.domain.user_bookmarked.controller.model.BookmarkRequestDto;
@@ -19,29 +21,32 @@ public class UserBookmarkedController {
     private final UserBookmarkedBusiness userBookmarkedBusiness;
 
     @PostMapping("/{userId}/bookmark")
-    public ResponseEntity<String> addBookmarkedDentist(
+    public Api<String> addBookmarkedDentist(
             @PathVariable("userId") Long userId,
             @RequestBody BookmarkRequestDto hospitalId
-    ){
-        userBookmarkedService.addBookmarkedDentist(userId,hospitalId.getHospitalId());
-        return ResponseEntity.ok("Hospital ID :" + hospitalId.getHospitalId() + " 가 찜 목록에서 추가되었습니다");
-    }
-    @DeleteMapping("/{userId}/bookmark")
-    public ResponseEntity<String>  deleteBookmarkedDentist(
-            @PathVariable("userId") Long userId,
-            @RequestBody BookmarkRequestDto hospitalId
-    ){
-        userBookmarkedService.deleteBookmarkedDentist(userId,hospitalId.getHospitalId());
-        return ResponseEntity.ok("Hospital ID :" + hospitalId.getHospitalId() + " 가 찜 목록에서 삭제되었습니다");
+    ) {
+        userBookmarkedService.addBookmarkedDentist(userId, hospitalId.getHospitalId());
 
+        String message = "Hospital ID :" + hospitalId.getHospitalId() + " 가 찜 목록에서 추가되었습니다";
+        return new Api<>(new Result(200, "찜 목록에 추가 성공", "성공"), message);
+    }
+    @DeleteMapping("/{userId}/bookmark/{hospitalId}")
+    public Api<String> deleteBookmarkedDentist(
+            @PathVariable("userId") Long userId,
+            @PathVariable("hospitalId") String hospitalId
+    ) {
+        userBookmarkedService.deleteBookmarkedDentist(userId, hospitalId);
+
+        String message = "Hospital ID :" + hospitalId + " 가 찜 목록에서 삭제되었습니다";
+        return new Api<>(new Result(200, "찜 목록에서 삭제 성공", "성공"), message);
     }
 
     @GetMapping("/{userId}/bookmark")
-    public ResponseEntity<List<DentistDto>> deleteBookmarkedDentist(
+    public Api<List<DentistDto>> getBookmarkedDentists(
             @PathVariable("userId") Long userId
-    ){
+    ) {
         List<DentistDto> dentistDtos = userBookmarkedBusiness.bookmarkedDentists(userId);
-        return ResponseEntity.ok(dentistDtos);
+        return new Api<>(new Result(200, "찜 목록 조회 성공", "성공"), dentistDtos);
     }
 
 }

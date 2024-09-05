@@ -9,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -45,6 +46,14 @@ public class ReviewService {
     public boolean isReviewExist(String id) {
         ObjectId objectId = new ObjectId(id);
         return reviewRepository.existsById(objectId);
+    }
+    public List<ReviewDoc> findCommentsByIds(List<ObjectId> ids) {
+        return reviewRepository.findByIdIn(ids);
+    }
+
+    public ReviewDoc findParentCommentById(String commentId) {
+        ObjectId objectId = new ObjectId(commentId);
+        return reviewRepository.findFirstByCommentReplysContaining(objectId);
     }
 
 }
