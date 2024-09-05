@@ -5,6 +5,7 @@ import api.Result;
 import com.example.domain.board.controller.model.BoardAddRequest;
 import com.example.domain.board.controller.model.BoardAddResponse;
 import com.example.domain.board.business.BoardBusiness;
+import com.example.domain.board.controller.model.BoardGetMyBoardsResponse;
 import com.example.domain.user.controller.model.UserResponse;
 import com.example.domain.user.controller.model.UserUpdateRequest;
 import jakarta.validation.Valid;
@@ -38,6 +39,14 @@ public class BoardController {
             @PathVariable("userId") Long userId,
             @PathVariable("boardId") Long boardId) {
         return ResponseEntity.ok(boardBusiness.deleteBoard(userId, boardId));
+    }
+
+    // 게시글 조회 (내가 쓴 글)
+    @GetMapping("/{userId}/board/myboards")
+    public ResponseEntity<List<BoardGetMyBoardsResponse>>  getMyBoards(
+            @PathVariable("userId") Long userId
+    ) {
+        return ResponseEntity.ok(boardBusiness.getMyBoards(userId));
     }
 
     // 게시글 수정

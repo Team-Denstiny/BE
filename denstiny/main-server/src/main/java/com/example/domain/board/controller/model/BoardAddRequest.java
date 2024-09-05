@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -13,5 +14,5 @@ public class BoardAddRequest {
     private String title;
     private String content;
     private Integer category;
-    private List<String> dentalType;
+    private Optional<List<String>> dentalType;
 }

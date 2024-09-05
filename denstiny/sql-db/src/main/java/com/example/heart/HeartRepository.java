@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface HeartRepository extends JpaRepository<HeartEntity, Long> {
     Optional<HeartEntity> findByUserAndBoard(UserEntity user, BoardEntity board);
+
+    Long countByBoard(BoardEntity board);
 }

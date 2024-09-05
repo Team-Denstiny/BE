@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,9 +26,13 @@ public class BoardService {
         return boardRepository.getReferenceById(boardId);
     }
 
+    // 게시글 삭제
     public void deleteBoard(BoardEntity board) {
         boardRepository.delete(board);
     }
+
+    // 게시글 조회
+    public List<BoardEntity> getMyBoards(Long writer) { return boardRepository.findByWriter(writer); }
 
 //    // 게시글 프록시 객체 ID 조회 - findById
 //    public Optional<BoardEntity> getReferenceBoardId(Long boardId) {
