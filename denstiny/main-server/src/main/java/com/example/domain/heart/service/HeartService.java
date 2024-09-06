@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,9 +19,13 @@ import java.util.Optional;
 public class HeartService {
     private final HeartRepository heartRepository;
 
+    // User와 Board로 좋아요 조회
     public Optional<HeartEntity> findByUserAndBoard(UserEntity user, BoardEntity board) {
         return heartRepository.findByUserAndBoard(user, board);
     }
+
+    // userId로 좋아요 프록시 객체 조회
+    public List<HeartEntity> findByUser(UserEntity user) { return heartRepository.findByUser(user); }
 
     // 좋아요 생성
     public HeartEntity addHeart(HeartEntity heartEntity) {
