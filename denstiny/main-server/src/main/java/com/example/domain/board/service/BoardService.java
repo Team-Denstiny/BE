@@ -32,7 +32,7 @@ public class BoardService {
     }
 
     // 게시글 조회
-    public List<BoardEntity> getMyBoards(Long writer) { return boardRepository.findByWriter(writer); }
+    public List<BoardEntity> findByWriter(Long writer) { return boardRepository.findByWriter(writer); }
 
 //    // 게시글 프록시 객체 ID 조회 - findById
 //    public Optional<BoardEntity> getReferenceBoardId(Long boardId) {

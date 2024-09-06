@@ -51,17 +51,17 @@ public class HeartBusiness {
     // 좋아요 삭제
     @Transactional
     public String deleteHeart(HeartRequest heartReq, Long userId) {
-        // 1. getReferecneUserId로 User 엔티티 가져옴
+        // getReferecneUserId로 User 엔티티 가져옴
         UserEntity user = userService.getReferenceUserId(userId);
 
-        // 2. getReferenceBoardId로 Board 엔티티 가져옴
+        // getReferenceBoardId로 Board 엔티티 가져옴
         BoardEntity board = boardService.getReferenceBoardId(heartReq.getBoardId());
 
-        // 3. 조회한 user와 board의 프록시 객체로 조회
+        // 조회한 user와 board의 프록시 객체로 조회
         HeartEntity heart = heartService.findByUserAndBoard(user, board)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "Heart is null"));
 
-        // 4. 존재하면, 해당 좋아요 삭제
+        // 존재하면, 해당 좋아요 삭제
         heartService.deleteHeart(heart);
         return "성공적으로 유저" + heart.getUser().getUserId() + "이 게시글 번호" + heart.getBoard().getBoardId() + " 게시글의 좋아요를 삭제하였습니다.";
     }
