@@ -41,12 +41,20 @@ public class BoardController {
         return ResponseEntity.ok(boardBusiness.deleteBoard(userId, boardId));
     }
 
-    // 게시글 조회 (내가 쓴 글)
+    // 게시글 조회 - 내가 쓴 글
     @GetMapping("/{userId}/board/myboards")
-    public ResponseEntity<List<BoardGetMyBoardsResponse>>  getMyBoards(
+    public ResponseEntity<List<BoardGetMyBoardsResponse>> getMyBoards(
             @PathVariable("userId") Long userId
     ) {
         return ResponseEntity.ok(boardBusiness.getMyBoards(userId));
+    }
+
+    // 게시글 조회 - 내가 좋아요 한 글
+    @GetMapping("/{userId}/board/myheartboards")
+    public ResponseEntity<List<BoardGetMyBoardsResponse>> getMyHeartBoards(
+            @PathVariable("userId") Long userId
+    ) {
+        return ResponseEntity.ok(boardBusiness.getMyHeartBoards(userId));
     }
 
     // 게시글 수정
