@@ -47,6 +47,24 @@ public class BoardCommentBusiness {
 
         boardCommentService.deleteById(boardCommentId);
 
-        return boardId + "번 게시글의" + boardCommentId + "번 댓글이 성공적으로 삭제되었습니다.";
+        return boardId + "번 게시글의 " + boardCommentId + "번 댓글이 성공적으로 삭제되었습니다.";
+    }
+
+    public String updateBoardComment(Long userId, Long boardId, Long boardCommentId, BoardCommentAddRequest req) {
+        if(!boardCommentService.isBoardCommentExist(boardCommentId)){
+            throw new ApiException(ErrorCode.NULL_POINT, "해당 댓글은 없는 댓글입니다.");
+        }
+
+        BoardCommentEntity boardCommentEntity = boardCommentService.getReferenceById(boardCommentId);
+
+        if(!boardCommentEntity.getUser().getUserId().equals(userId)) {
+            throw new ApiException(UserErrorCode.USER_NOT_AUTHORIZED, "자신이 작성한 댓글만 수정할 수 있습니다.");
+        }
+
+        boardCommentEntity.setContent(req.getContent());
+
+        boardCommentService.saveBoardComment(boardCommentEntity);
+
+        return boardId + "번 게시글의 " + boardCommentId + "번 댓글이 성공적으로 수정되었습니다.";
     }
 }
