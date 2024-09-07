@@ -23,4 +23,13 @@ public class BoardCommentController {
         return new Api<>(new Result(201, "게시판 댓글 추가 성공", "성공"), message);
     }
 
+    @DeleteMapping("/{userId}/board/{boardId}/comment/{boardCommentId}")
+    public Api<String> deleteBoardComment(
+            @PathVariable("userId") Long userId,
+            @PathVariable("boardId") Long boardId,
+            @PathVariable("boardCommentId") Long boardCommentId
+    ) {
+        String message = boardCommentBusiness.deleteBoardComment(userId, boardId, boardCommentId);
+        return new Api<>(new Result(200, "게시글 댓글 삭제 성공", "성공"), message);
+    }
 }
