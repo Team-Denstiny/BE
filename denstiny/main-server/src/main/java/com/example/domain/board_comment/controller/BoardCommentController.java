@@ -32,4 +32,15 @@ public class BoardCommentController {
         String message = boardCommentBusiness.deleteBoardComment(userId, boardId, boardCommentId);
         return new Api<>(new Result(200, "게시글 댓글 삭제 성공", "성공"), message);
     }
+
+    @PutMapping("/{userId}/board/{boardId}/comment/{boardCommentId}")
+    public Api<String> updateBoardComment(
+            @PathVariable("userId") Long userId,
+            @PathVariable("boardId") Long boardId,
+            @PathVariable("boardCommentId") Long boardCommentId,
+            @RequestBody BoardCommentAddRequest req
+    ) {
+        String message = boardCommentBusiness.updateBoardComment(userId, boardId, boardCommentId, req);
+        return new Api<>(new Result(200, "게시글 댓글 수정 성공", "성공"), message);
+    }
 }
