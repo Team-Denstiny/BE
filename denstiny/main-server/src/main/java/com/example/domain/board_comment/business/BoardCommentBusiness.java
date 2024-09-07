@@ -8,7 +8,10 @@ import com.example.domain.board_comment.controller.model.BoardCommentAddRequest;
 import com.example.domain.board_comment.converter.BoardCommentConverter;
 import com.example.domain.board_comment.service.BoardCommentService;
 import com.example.domain.user.service.UserService;
+import com.example.error.UserErrorCode;
 import com.example.user.UserEntity;
+import error.ErrorCode;
+import exception.ApiException;
 import lombok.AllArgsConstructor;
 
 @Business
@@ -29,5 +32,21 @@ public class BoardCommentBusiness {
         boardCommentService.saveBoardComment(boardCommentEntity);
 
         return boardId + "에 댓글이 추가되었습니다.";
+    }
+
+    public String deleteBoardComment(Long userId, Long boardId, Long boardCommentId) {
+        if(!boardCommentService.isBoardCommentExist(boardCommentId)){
+            throw new ApiException(ErrorCode.NULL_POINT, "해당 댓글은 없는 댓글입니다.");
+        }
+
+        BoardCommentEntity boardCommentEntity = boardCommentService.getReferenceById(boardCommentId);
+
+        if(!boardCommentEntity.getUser().getUserId().equals(userId)) {
+            throw new ApiException(UserErrorCode.USER_NOT_AUTHORIZED, "자신이 작성한 댓글만 삭제할 수 있습니다.");
+        }
+
+        boardCommentService.deleteById(boardCommentId);
+
+        return boardId + "번 게시글의" + boardCommentId + "번 댓글이 성공적으로 삭제되었습니다.";
     }
 }
