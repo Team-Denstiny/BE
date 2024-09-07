@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "board")
+@Table(name = "board", indexes = @Index(name = "board_idx_board_id", columnList = "board_id"))
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
