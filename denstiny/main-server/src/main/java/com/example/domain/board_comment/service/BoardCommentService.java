@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.board_comment.BoardCommentEntity;
 import com.example.board_comment.BoardCommentRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @Transactional
@@ -30,5 +32,9 @@ public class BoardCommentService {
 
     public void deleteById(Long boardCommentId) {
         boardCommentRepository.deleteById(boardCommentId);
+    }
+
+    public List<BoardCommentEntity> findBoardCommentByBoard(BoardEntity board) {
+        return boardCommentRepository.findBoardCommentByBoard(board);
     }
 }
