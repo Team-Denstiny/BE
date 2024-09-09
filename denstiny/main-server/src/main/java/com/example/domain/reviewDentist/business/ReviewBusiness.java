@@ -115,8 +115,7 @@ public class ReviewBusiness {
         List<ReviewResponse> reviewResponses = reviewInfoDocById.getReviews()
                 .stream()
                 .map(objectId -> {
-                    String stringId = objectId.toString();
-                    ReviewDoc reviewDoc = reviewService.findReviewById(stringId);
+                    ReviewDoc reviewDoc = reviewService.findReviewByObjectId(objectId);
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(reviewDoc);
                     // nickname은 변경 가능성이 있으므로 -> 조회시마다 가져온다
                     reviewResponse.setNickName(userService.getUserById(reviewDoc.getUserId()).getNickName());

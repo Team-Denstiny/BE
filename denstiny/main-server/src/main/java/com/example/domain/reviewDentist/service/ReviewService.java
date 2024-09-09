@@ -1,6 +1,7 @@
 package com.example.domain.reviewDentist.service;
 
 import com.example.reviewDentist.Document.ReviewDoc;
+import com.example.reviewDentist.Document.ReviewInfoDoc;
 import com.example.reviewDentist.repository.ReviewRepository;
 import error.ErrorCode;
 import exception.ApiException;
@@ -36,6 +37,9 @@ public class ReviewService {
     public ReviewDoc findReviewById(String id) {
         ObjectId objectId = new ObjectId(id);
         return reviewRepository.findById(objectId);
+    }
+    public ReviewDoc findReviewByObjectId(ObjectId id){
+        return reviewRepository.findById(id);
     }
 
     public void deleteById(String id){
