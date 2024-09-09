@@ -4,6 +4,7 @@ import annotation.Converter;
 import com.example.board.BoardEntity;
 import com.example.board_comment.BoardCommentEntity;
 import com.example.domain.board_comment.controller.model.BoardCommentAddRequest;
+import com.example.domain.board_comment.controller.model.BoardCommentResponse;
 import com.example.domain.user.controller.model.UserRegisterRequest;
 import com.example.domain.user.controller.model.UserRegisterResponse;
 import com.example.user.UserEntity;
@@ -26,15 +27,12 @@ public class BoardCommentConverter {
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT,"BoardCommentAddRequest is null"));
     }
 
-//    public UserRegisterResponse toRegisterResponse(UserEntity user){
-//        return Optional.ofNullable(user)
-//                .map(it -> {
-//                    return UserRegisterResponse.builder()
-//                            .memberId(user.getUserId())
-//                            .name(user.getName())
-//                            .nickName(user.getNickName())
-//                            .email(user.getEmail())
-//                            .build();
-//                }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "UserEntity is null"));
-//    }
+    public BoardCommentResponse toBoardCommentResponse(BoardCommentEntity boardComment) {
+        return BoardCommentResponse.builder()
+                .boardCommentId(boardComment.getBoardCommentId())
+                .content(boardComment.getContent())
+                .boardId(boardComment.getBoard().getBoardId())
+                .userId(boardComment.getUser().getUserId())
+                .build();
+    }
 }
