@@ -1,0 +1,6 @@
+rootProject.name = 'denstiny'
+include 'common'
+include 'main-server'
+include 'sql-db'
+include 'mongo-db'
+
