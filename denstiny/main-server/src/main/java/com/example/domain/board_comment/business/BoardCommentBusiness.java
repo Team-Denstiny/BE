@@ -5,14 +5,19 @@ import com.example.board.BoardEntity;
 import com.example.board_comment.BoardCommentEntity;
 import com.example.domain.board.service.BoardService;
 import com.example.domain.board_comment.controller.model.BoardCommentAddRequest;
+import com.example.domain.board_comment.controller.model.BoardCommentResponse;
 import com.example.domain.board_comment.converter.BoardCommentConverter;
 import com.example.domain.board_comment.service.BoardCommentService;
+import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.user.UserEntity;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Business
 @AllArgsConstructor
@@ -66,5 +71,15 @@ public class BoardCommentBusiness {
         boardCommentService.saveBoardComment(boardCommentEntity);
 
         return boardId + "번 게시글의 " + boardCommentId + "번 댓글이 성공적으로 수정되었습니다.";
+    }
+
+    public List<BoardCommentResponse> findBoardCommentsByBoard(Long userId, Long boardId) {
+        BoardEntity board = boardService.getReferenceBoardId(boardId);
+        return boardCommentService.findBoardCommentByBoard(board).stream()
+                .map(boardComment -> {
+                    BoardCommentResponse boardCommentResponse = boardCommentConverter.toBoardCommentResponse(boardComment);
+                    return boardCommentResponse;
+                })
+                .collect(Collectors.toList());
     }
 }
