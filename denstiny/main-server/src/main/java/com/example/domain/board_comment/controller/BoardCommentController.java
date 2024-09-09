@@ -5,8 +5,10 @@ import api.Api;
 import api.Result;
 import com.example.domain.board_comment.business.BoardCommentBusiness;
 import com.example.domain.board_comment.controller.model.BoardCommentAddRequest;
+import com.example.domain.board_comment.controller.model.BoardCommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,5 +44,14 @@ public class BoardCommentController {
     ) {
         String message = boardCommentBusiness.updateBoardComment(userId, boardId, boardCommentId, req);
         return new Api<>(new Result(200, "게시글 댓글 수정 성공", "성공"), message);
+    }
+
+    @GetMapping("/{userId}/board/{boardId}/comment")
+    public Api<List<BoardCommentResponse>> findBoardCommentsByBoard(
+            @PathVariable("userId") Long userId,
+            @PathVariable("boardId") Long boardId
+    ){
+        List<BoardCommentResponse> boardComments = boardCommentBusiness.findBoardCommentsByBoard(userId, boardId);
+        return new Api<>(new Result(200, "게시글 댓글 조회 성공", "성공"), boardComments);
     }
 }
