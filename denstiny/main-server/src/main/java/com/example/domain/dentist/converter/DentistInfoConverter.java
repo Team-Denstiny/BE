@@ -59,6 +59,8 @@ public class DentistInfoConverter {
                 .addr(dentistInfoDoc.getAddress())
                 .dong(dentistInfoDoc.getDong())
                 .gu(dentistInfoDoc.getGu())
+                .longitude(dentistInfoDoc.getLocation().getX()) // Point 객체에서 getX, getY이렇게 위도,경도를 추출할 수 있다
+                .latitude(dentistInfoDoc.getLocation().getY())
                 .tele(dentistInfoDoc.getTelephone())
                 .img(dentistInfoDoc.getImageUrl())
                 .timeDataMap(dentistInfoDoc.getTimeInfo())
