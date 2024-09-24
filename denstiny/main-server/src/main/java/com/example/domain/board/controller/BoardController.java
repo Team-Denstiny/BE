@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -41,16 +42,16 @@ public class BoardController {
     }
 
     // 게시글 조회
-//    @GetMapping("/{userId}/board/category/{category}")
-//    public Api<List<BoardGetBoardsResponse>> findBoardsByCategory(
-//            @PathVariable("userId") Long userId,
-//            @PathVariable("category") Long category,
-//            @RequestParam(defaultValue = "0") Integer page,
-//            @RequestParam(defaultValue = "10") Integer size
-//    ) {
-//        List<ReviewResponse> boards = boardBusiness.findBoardsByCategory(userId, category, page, size);
-//        return new Api<>(new Result(200, "카테고리에 따른 게시글 조회 성공", "성공"), boards);
-//    }
+    @GetMapping("/{userId}/board/category/{category}")
+    public Api<Page<BoardGetBoardsResponse>> findBoardsByCategory(
+            @PathVariable("userId") Long userId,
+            @PathVariable("category") Long category,
+            @RequestParam(defaultValue = "0",name = "page") int page,
+            @RequestParam(defaultValue = "10",name = "size") int size
+    ) {
+        Page<BoardGetBoardsResponse> boards = boardBusiness.findBoardsByCategory(userId, category, page, size);
+        return new Api<>(new Result(200, "카테고리에 따른 게시글 조회 성공", "성공"), boards);
+    }
 
     // 게시글 조회 - 내가 쓴 글
     @GetMapping("/{userId}/board/myboards")

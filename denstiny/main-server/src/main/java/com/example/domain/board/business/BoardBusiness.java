@@ -19,7 +19,10 @@ import com.example.domain.board.controller.model.BoardAddResponse;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Optional;
 import java.util.List;
@@ -115,5 +118,44 @@ public class BoardBusiness {
                     boardGetBoardsResponse.setHeartCount(heartService.countByBoard(heart.getBoard()));
                     return boardGetBoardsResponse;
                 }).collect(Collectors.toList());
+    }
+
+    // 게시글 조회
+    public Page<BoardGetBoardsResponse> findBoardsByCategory(Long userId, Long category, Integer page, Integer size) {
+        if (category == 0) {
+            Page<BoardEntity> boardEntities = boardService.findAll(PageRequest.of(page, size));
+
+            // BoardEntity를 BoardGetBoardsResponse로 변환
+            List<BoardGetBoardsResponse> responses = boardEntities.stream()
+                    .map(entity -> BoardGetBoardsResponse.builder()
+                            .boardId(entity.getBoardId())
+                            .title(entity.getTitle())
+                            .content(entity.getContent())
+                            .category(entity.getCategory())
+                            .viewCount(entity.getViewCount())
+                            .writer(entity.getWriter())
+                            .build())
+                    .collect(Collectors.toList());
+
+            // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
+            return new PageImpl<>(responses, boardEntities.getPageable(), boardEntities.getTotalElements());
+        } else {
+            Page<BoardEntity> boardEntities = boardService.findByCategory(category, PageRequest.of(page, size));
+
+            // BoardEntity를 BoardGetBoardsResponse로 변환
+            List<BoardGetBoardsResponse> responses = boardEntities.stream()
+                    .map(entity -> BoardGetBoardsResponse.builder()
+                            .boardId(entity.getBoardId())
+                            .title(entity.getTitle())
+                            .content(entity.getContent())
+                            .category(entity.getCategory())
+                            .viewCount(entity.getViewCount())
+                            .writer(entity.getWriter())
+                            .build())
+                    .collect(Collectors.toList());
+
+            // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
+            return new PageImpl<>(responses, boardEntities.getPageable(), boardEntities.getTotalElements());
+        }
     }
 }

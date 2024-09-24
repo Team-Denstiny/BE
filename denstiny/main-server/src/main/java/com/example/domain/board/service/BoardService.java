@@ -2,8 +2,11 @@ package com.example.domain.board.service;
 
 import com.example.board.BoardEntity;
 import com.example.board.BoardRepository;
+import com.example.domain.board.controller.model.BoardGetBoardsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,14 @@ public class BoardService {
 
     // 게시글 조회
     public List<BoardEntity> findByWriter(Long writer) { return boardRepository.findByWriter(writer); }
+
+    public Page<BoardEntity> findAll(PageRequest of) {
+        return boardRepository.findAll(of);
+    }
+
+    public Page<BoardEntity> findByCategory(Long category, PageRequest of) {
+        return boardRepository.findByCategory(category, of);
+    }
 
 //    // 게시글 프록시 객체 ID 조회 - findById
 //    public Optional<BoardEntity> getReferenceBoardId(Long boardId) {
