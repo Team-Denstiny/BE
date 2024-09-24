@@ -53,10 +53,9 @@ tasks.named('test') {
 
 bootJar {
     enabled = true
+    mainClassName = 'com.example.MainServerApplication'
 }
 
 jar {
     enabled = false
 }
-
-mainClassName = 'MainServerApplication'
