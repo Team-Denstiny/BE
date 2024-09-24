@@ -8,6 +8,7 @@ import com.example.domain.reviewDentist.service.ReviewService;
 import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.reviewDentist.Document.ReviewDoc;
+import com.example.user.UserEntity;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -138,10 +139,13 @@ public class CommentBusiness {
                 .stream()
                 .map(review -> {
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(review);
-                    // nickname을 조회하여 설정
-                    String nickName = userService.getUserById(review.getUserId()).getNickName();
-                    reviewResponse.setNickName(nickName);
+
+                    // nickname, img는 변경 가능성이 있으므로 -> 조회시마다 가져온다
+                    UserEntity userById = userService.getUserById(reviewDoc.getUserId());
+                    reviewResponse.setNickName(userById.getNickName());
+                    reviewResponse.setImageUrl(userById.getProfileImg());
                     return reviewResponse;
+
                 })
                 .collect(Collectors.toList());
     }
