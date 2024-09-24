@@ -53,7 +53,7 @@ tasks.named('test') {
 
 bootJar {
     enabled = true
-    mainClassName = 'src.main.java.com.example.MainServerApplication'
+    mainClassName = 'com.example.MainServerApplication'
 }
 
 jar {
