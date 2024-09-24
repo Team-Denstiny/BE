@@ -3,13 +3,14 @@ package com.example.domain.board.business;
 import annotation.Business;
 import com.example.board.BoardEntity;
 import com.example.board_image.BoardImageEntity;
-import com.example.domain.board.controller.model.BoardGetMyBoardsResponse;
+import com.example.domain.board.controller.model.BoardGetBoardsResponse;
 import com.example.domain.board.converter.BoardDentalTypeConverter;
 import com.example.domain.board.service.BoardDentalTypeService;
 import com.example.domain.board.service.BoardImageService;
 import com.example.domain.board.service.BoardService;
 import com.example.domain.board.converter.BoardConverter;
 import com.example.domain.heart.service.HeartService;
+import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.user.service.UserService;
 import com.example.user.UserEntity;
 import com.example.util.BoardImageUtil;
@@ -87,27 +88,32 @@ public class BoardBusiness {
         return "유저" + userId + "이 게시글 번호" + boardId + "게시글 삭제에 실패하였습니다.";
     }
 
+//    // 게시글 조회 - 카테고리에 따른 게시글
+//    public List<ReviewResponse> findBoardsByCategory(Long userId, Long category, Integer page, Integer size) {
+//        return commentRepository.findByBoard(board, PageRequest.of(page, size));
+//    }
+
     // 게시글 조회 - 내가 쓴 글
-    public List<BoardGetMyBoardsResponse> getMyBoards(Long userId) {
+    public List<BoardGetBoardsResponse> getMyBoards(Long userId) {
         List<BoardEntity> boards = boardService.findByWriter(userId);
 
         return boards.stream()
                 .map(board -> {
-                    BoardGetMyBoardsResponse boardGetMyBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(board);
-                    boardGetMyBoardsResponse.setHeartCount(heartService.countByBoard(board));
-                    return boardGetMyBoardsResponse;
+                    BoardGetBoardsResponse boardGetBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(board);
+                    boardGetBoardsResponse.setHeartCount(heartService.countByBoard(board));
+                    return boardGetBoardsResponse;
                 }).collect(Collectors.toList());
     }
 
     // 게시글 조회 - 내가 좋아요 한 글
-    public List<BoardGetMyBoardsResponse> getMyHeartBoards(Long userId) {
+    public List<BoardGetBoardsResponse> getMyHeartBoards(Long userId) {
         UserEntity user = userService.getReferenceUserId(userId);
 
         return heartService.findByUser(user).stream()
                 .map(heart -> {
-                    BoardGetMyBoardsResponse boardGetMyBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(heart.getBoard());
-                    boardGetMyBoardsResponse.setHeartCount(heartService.countByBoard(heart.getBoard()));
-                    return boardGetMyBoardsResponse;
+                    BoardGetBoardsResponse boardGetBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(heart.getBoard());
+                    boardGetBoardsResponse.setHeartCount(heartService.countByBoard(heart.getBoard()));
+                    return boardGetBoardsResponse;
                 }).collect(Collectors.toList());
     }
 }

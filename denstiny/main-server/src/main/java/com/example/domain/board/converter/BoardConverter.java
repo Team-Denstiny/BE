@@ -3,11 +3,10 @@ package com.example.domain.board.converter;
 import annotation.Converter;
 import java.util.Optional;
 
-import api.Api;
 import com.example.board.BoardEntity;
 import com.example.domain.board.controller.model.BoardAddRequest;
 import com.example.domain.board.controller.model.BoardAddResponse;
-import com.example.domain.board.controller.model.BoardGetMyBoardsResponse;
+import com.example.domain.board.controller.model.BoardGetBoardsResponse;
 import error.ErrorCode;
 import exception.ApiException;
 
@@ -37,10 +36,10 @@ public class BoardConverter {
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "BoardEntity is null"));
     }
 
-    public BoardGetMyBoardsResponse toBoardGetMyBoardsResponse(BoardEntity board){
+    public BoardGetBoardsResponse toBoardGetMyBoardsResponse(BoardEntity board){
         return Optional.ofNullable(board)
                 .map(it -> {
-                    return  BoardGetMyBoardsResponse.builder()
+                    return  BoardGetBoardsResponse.builder()
                             .boardId(it.getBoardId())
                             .title(it.getTitle())
                             .content(it.getContent())

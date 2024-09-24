@@ -33,6 +33,7 @@ public class BoardCommentConverter {
                 .content(boardComment.getContent())
                 .boardId(boardComment.getBoard().getBoardId())
                 .userId(boardComment.getUser().getUserId())
+                .updatedAt(boardComment.getUpdated_at())
                 .build();
     }
 }

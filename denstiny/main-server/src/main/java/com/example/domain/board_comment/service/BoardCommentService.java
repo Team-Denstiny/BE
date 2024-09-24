@@ -34,7 +34,11 @@ public class BoardCommentService {
         boardCommentRepository.deleteById(boardCommentId);
     }
 
-    public List<BoardCommentEntity> findBoardCommentByBoard(BoardEntity board) {
-        return boardCommentRepository.findBoardCommentByBoard(board);
+    public List<BoardCommentEntity> findBoardCommentByBoardAndParentCommentIsNull(BoardEntity board) {
+        return boardCommentRepository.findBoardCommentByBoardAndParentCommentIsNull(board);
+    }
+
+    public List<BoardCommentEntity> findBoardCommentByParentComment(BoardCommentEntity boardComment) {
+        return boardCommentRepository.findBoardCommentByParentComment(boardComment);
     }
 }
