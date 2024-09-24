@@ -10,6 +10,7 @@ import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.reviewDentist.Document.ReviewDoc;
 import com.example.reviewDentist.Document.ReviewInfoDoc;
+import com.example.user.UserEntity;
 import error.ErrorCode;
 import exception.ApiException;
 import lombok.AllArgsConstructor;
@@ -117,8 +118,12 @@ public class ReviewBusiness {
                 .map(objectId -> {
                     ReviewDoc reviewDoc = reviewService.findReviewByObjectId(objectId);
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(reviewDoc);
-                    // nickname은 변경 가능성이 있으므로 -> 조회시마다 가져온다
-                    reviewResponse.setNickName(userService.getUserById(reviewDoc.getUserId()).getNickName());
+
+                    // nickname, img는 변경 가능성이 있으므로 -> 조회시마다 가져온다
+                    UserEntity userById = userService.getUserById(reviewDoc.getUserId());
+                    reviewResponse.setNickName(userById.getNickName());
+                    reviewResponse.setImageUrl(userById.getProfileImg());
+
                     return reviewResponse;
                 }).collect(Collectors.toList());
 
@@ -134,9 +139,13 @@ public class ReviewBusiness {
         return reviewDocList.stream()
                 .map(reviewDoc -> {
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(reviewDoc);
-                    // nickname은 변경 가능성이 있으므로 -> 조회시마다 가져온다
-                    reviewResponse.setNickName(userService.getUserById(userId).getNickName());
+
+                    // nickname, img는 변경 가능성이 있으므로 -> 조회시마다 가져온다
+                    UserEntity userById = userService.getUserById(reviewDoc.getUserId());
+                    reviewResponse.setNickName(userById.getNickName());
+                    reviewResponse.setImageUrl(userById.getProfileImg());
                     return reviewResponse;
+
                 })
                 .collect(Collectors.toList());
     }
@@ -148,8 +157,12 @@ public class ReviewBusiness {
         return reviewDocList.stream()
                 .map(reviewDoc -> {
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(reviewDoc);
-                    // nickname은 변경 가능성이 있으므로 -> 조회시마다 가져온다
-                    reviewResponse.setNickName(userService.getUserById(userId).getNickName());
+
+                    // nickname, img는 변경 가능성이 있으므로 -> 조회시마다 가져온다
+                    UserEntity userById = userService.getUserById(reviewDoc.getUserId());
+                    reviewResponse.setNickName(userById.getNickName());
+                    reviewResponse.setImageUrl(userById.getProfileImg());
+
                     return reviewResponse;
                 })
                 .collect(Collectors.toList());
