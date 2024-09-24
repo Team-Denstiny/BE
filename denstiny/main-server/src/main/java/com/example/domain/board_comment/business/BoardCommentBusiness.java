@@ -8,7 +8,6 @@ import com.example.domain.board_comment.controller.model.BoardCommentAddRequest;
 import com.example.domain.board_comment.controller.model.BoardCommentResponse;
 import com.example.domain.board_comment.converter.BoardCommentConverter;
 import com.example.domain.board_comment.service.BoardCommentService;
-import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.user.service.UserService;
 import com.example.error.UserErrorCode;
 import com.example.user.UserEntity;
@@ -34,9 +33,11 @@ public class BoardCommentBusiness {
         BoardCommentEntity boardCommentEntity = boardCommentConverter.toBoardCommentEntity(req);
         boardCommentEntity.setUser(user);
         boardCommentEntity.setBoard(board);
+        boardCommentEntity.setParentComment(null);
+
         boardCommentService.saveBoardComment(boardCommentEntity);
 
-        return boardId + "에 댓글이 추가되었습니다.";
+        return boardId + "게시글에 댓글이 추가되었습니다.";
     }
 
     public String deleteBoardComment(Long userId, Long boardId, Long boardCommentId) {
@@ -75,9 +76,14 @@ public class BoardCommentBusiness {
 
     public List<BoardCommentResponse> findBoardCommentsByBoard(Long userId, Long boardId) {
         BoardEntity board = boardService.getReferenceBoardId(boardId);
-        return boardCommentService.findBoardCommentByBoard(board).stream()
+        return boardCommentService.findBoardCommentByBoardAndParentCommentIsNull(board).stream()
                 .map(boardComment -> {
                     BoardCommentResponse boardCommentResponse = boardCommentConverter.toBoardCommentResponse(boardComment);
+                    boardCommentResponse.setChildrenComment(
+                            boardCommentService.findBoardCommentByParentComment(boardComment).stream()
+                                    .map(boardReComment -> {
+                                        return boardCommentConverter.toBoardCommentResponse(boardReComment);
+                                    }).collect(Collectors.toList()));
                     return boardCommentResponse;
                 })
                 .collect(Collectors.toList());

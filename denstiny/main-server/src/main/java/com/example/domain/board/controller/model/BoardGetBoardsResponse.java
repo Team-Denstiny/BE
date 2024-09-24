@@ -1,17 +1,18 @@
 package com.example.domain.board.controller.model;
 
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardGetMyBoardsResponse {
+public class BoardGetBoardsResponse {
     private Long boardId;
     private String title;
     private String content;
@@ -19,4 +20,6 @@ public class BoardGetMyBoardsResponse {
     private Integer viewCount;
     private Long writer;
     private Long heartCount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
 }

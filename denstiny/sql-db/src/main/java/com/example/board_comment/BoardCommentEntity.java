@@ -1,5 +1,6 @@
 package com.example.board_comment;
 
+import com.example.base.BaseEntity;
 import com.example.board.BoardEntity;
 import com.example.user.UserEntity;
 import jakarta.persistence.*;
@@ -7,6 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Persistable;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -14,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardCommentEntity {
+public class BoardCommentEntity extends BaseEntity  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_comment_id")
@@ -30,4 +37,12 @@ public class BoardCommentEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private BoardCommentEntity parentComment;
+
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<BoardCommentEntity> childrenComment = new ArrayList<>();
+
 }
