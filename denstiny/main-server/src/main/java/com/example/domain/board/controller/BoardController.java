@@ -6,6 +6,7 @@ import com.example.domain.board.controller.model.BoardAddRequest;
 import com.example.domain.board.controller.model.BoardAddResponse;
 import com.example.domain.board.business.BoardBusiness;
 import com.example.domain.board.controller.model.BoardGetBoardsResponse;
+import com.example.domain.dentist.controller.model.DentistDto;
 import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,21 +23,21 @@ public class BoardController {
 
     // 게시글 생성
     @PostMapping("/{userId}/board")
-    public ResponseEntity<String> addBoard(
+    public Api<String> addBoard(
             @PathVariable("userId") Long userId,
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
             @RequestPart(name = "request") BoardAddRequest boardAddReq
     ){
         BoardAddResponse boardRes = boardBusiness.addBoard(boardAddReq, images, userId);
-        return ResponseEntity.ok(boardRes.toString());
+        return new Api<>(new Result(201, "성공", "게시글 생성 성공"), boardRes.toString());
     }
 
     // 게시글 삭제
     @DeleteMapping("/{userId}/board/{boardId}")
-    public ResponseEntity<String> deleteBoard(
+    public Api<String> deleteBoard(
             @PathVariable("userId") Long userId,
             @PathVariable("boardId") Long boardId) {
-        return ResponseEntity.ok(boardBusiness.deleteBoard(userId, boardId));
+        return new Api<>(new Result(200, "성공", "게시글 삭제 성공"), boardBusiness.deleteBoard(userId, boardId));
     }
 
     // 게시글 조회
@@ -53,18 +54,18 @@ public class BoardController {
 
     // 게시글 조회 - 내가 쓴 글
     @GetMapping("/{userId}/board/myboards")
-    public ResponseEntity<List<BoardGetBoardsResponse>> getMyBoards(
+    public Api<List<BoardGetBoardsResponse>> getMyBoards(
             @PathVariable("userId") Long userId
     ) {
-        return ResponseEntity.ok(boardBusiness.getMyBoards(userId));
+        return new Api<>(new Result(200, "성공", "게시글 내가 쓴 글 조회 성공"), boardBusiness.getMyBoards(userId));
     }
 
     // 게시글 조회 - 내가 좋아요 한 글
     @GetMapping("/{userId}/board/myheartboards")
-    public ResponseEntity<List<BoardGetBoardsResponse>> getMyHeartBoards(
+    public Api<List<BoardGetBoardsResponse>> getMyHeartBoards(
             @PathVariable("userId") Long userId
     ) {
-        return ResponseEntity.ok(boardBusiness.getMyHeartBoards(userId));
+        return new Api<>(new Result(200, "성공", "게시글 내가 좋아요 한 글 조회 성공"), boardBusiness.getMyHeartBoards(userId));
     }
 
     // 게시글 수정
