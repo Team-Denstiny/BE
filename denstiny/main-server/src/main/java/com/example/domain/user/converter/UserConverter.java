@@ -60,6 +60,8 @@ public class UserConverter {
                             .address(user.getAddress())
                             .email(user.getEmail())
                             .profileImg(user.getProfileImg())
+                            .longitude(user.getLongitude())
+                            .latitude(user.getLatitude())
                             .build();
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "UserEntity is null"));
     }
