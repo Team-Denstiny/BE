@@ -23,6 +23,10 @@ public class DentistDetail {
 
     private String dong;
 
+    private Double longitude;
+
+    private Double latitude;
+
     private String tele;
 
     private String img;

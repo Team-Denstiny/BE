@@ -23,5 +23,6 @@ public class ReviewResponse {
     private String nickName;
     private Long userId;
     private String content;
+    private String imageUrl;
 
 }
