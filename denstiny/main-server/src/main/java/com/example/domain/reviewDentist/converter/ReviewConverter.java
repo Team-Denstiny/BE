@@ -24,7 +24,7 @@ public class ReviewConverter {
         return ReviewResponse.builder()
                 .id(reviewDoc.getId())
                 .userId(reviewDoc.getUserId())
-                .date(LocalDateTime.now())
+                .date(reviewDoc.getDate())
                 .hospitalId(reviewDoc.getHospitalId())
                 .content(reviewDoc.getContent())
                 .build();
