@@ -20,10 +20,10 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     public List<ReviewDoc> findReviewByUserIdAndHospitalId(Long userId, String hospitalId){
-        return reviewRepository.findByUserIdAndHospitalId(userId,hospitalId);
+        return reviewRepository.findByUserIdAndHospitalIdAndDepthOne(userId,hospitalId);
     }
     public List<ReviewDoc> findReviewByUserId(Long userId){
-        return reviewRepository.findByUserId(userId);
+        return reviewRepository.findByUserIdAndDepthOne(userId);
     }
 
     public ReviewDoc saveReview(ReviewDoc reviewDoc) {
@@ -39,7 +39,7 @@ public class ReviewService {
         return reviewRepository.findById(objectId);
     }
     public ReviewDoc findReviewByObjectId(ObjectId id){
-        return reviewRepository.findById(id);
+        return reviewRepository.findByIdAndDepthOne(id);
     }
 
     public void deleteById(String id){
