@@ -24,5 +24,6 @@ public class ReviewResponse {
     private Long userId;
     private String content;
     private String imageUrl;
+    private int commentCount;
 
 }

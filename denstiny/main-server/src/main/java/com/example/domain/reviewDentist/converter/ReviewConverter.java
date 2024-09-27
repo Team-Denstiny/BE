@@ -27,6 +27,7 @@ public class ReviewConverter {
                 .date(reviewDoc.getDate())
                 .hospitalId(reviewDoc.getHospitalId())
                 .content(reviewDoc.getContent())
+                .commentCount(reviewDoc.getCommentReplys().size())
                 .build();
     }
 }
