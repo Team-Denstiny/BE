@@ -141,7 +141,7 @@ public class CommentBusiness {
                     ReviewResponse reviewResponse = reviewConverter.toReviewResponse(review);
 
                     // nickname, img는 변경 가능성이 있으므로 -> 조회시마다 가져온다
-                    UserEntity userById = userService.getUserById(reviewDoc.getUserId());
+                    UserEntity userById = userService.getUserById(reviewResponse.getUserId());
                     reviewResponse.setNickName(userById.getNickName());
                     reviewResponse.setImageUrl(userById.getProfileImg());
                     return reviewResponse;
