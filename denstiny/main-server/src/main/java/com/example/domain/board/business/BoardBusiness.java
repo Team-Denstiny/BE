@@ -4,13 +4,11 @@ import annotation.Business;
 import com.example.board.BoardEntity;
 import com.example.board_image.BoardImageEntity;
 import com.example.domain.board.controller.model.BoardGetBoardsResponse;
-import com.example.domain.board.converter.BoardDentalTypeConverter;
-import com.example.domain.board.service.BoardDentalTypeService;
 import com.example.domain.board.service.BoardImageService;
 import com.example.domain.board.service.BoardService;
 import com.example.domain.board.converter.BoardConverter;
+import com.example.domain.board_comment.service.BoardCommentService;
 import com.example.domain.heart.service.HeartService;
-import com.example.domain.reviewDentist.controller.model.ReviewResponse;
 import com.example.domain.user.service.UserService;
 import com.example.user.UserEntity;
 import com.example.util.BoardImageUtil;
@@ -34,10 +32,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BoardBusiness {
     private final BoardService boardService;
+    private final BoardCommentService boardCommentService;
     private final BoardImageService boardImageService;
     private final BoardConverter boardConverter;
-    private final BoardDentalTypeService boardDentalTypeService;
-    private final BoardDentalTypeConverter boardDentalTypeConverter;
     private final HeartService heartService;
     private final UserService userService;
 
@@ -74,7 +71,7 @@ public class BoardBusiness {
 //            }
 //        }
 
-        return boardConverter.toBoardResponse(board);
+        return boardConverter.toBoardAddResponse(board);
     }
 
     // 게시글 삭제
@@ -127,14 +124,7 @@ public class BoardBusiness {
 
             // BoardEntity를 BoardGetBoardsResponse로 변환
             List<BoardGetBoardsResponse> responses = boardEntities.stream()
-                    .map(entity -> BoardGetBoardsResponse.builder()
-                            .boardId(entity.getBoardId())
-                            .title(entity.getTitle())
-                            .content(entity.getContent())
-                            .category(entity.getCategory())
-                            .viewCount(entity.getViewCount())
-                            .writer(entity.getWriter())
-                            .build())
+                    .map(boardConverter::toBoardGetMyBoardsResponse2)
                     .collect(Collectors.toList());
 
             // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
@@ -144,14 +134,7 @@ public class BoardBusiness {
 
             // BoardEntity를 BoardGetBoardsResponse로 변환
             List<BoardGetBoardsResponse> responses = boardEntities.stream()
-                    .map(entity -> BoardGetBoardsResponse.builder()
-                            .boardId(entity.getBoardId())
-                            .title(entity.getTitle())
-                            .content(entity.getContent())
-                            .category(entity.getCategory())
-                            .viewCount(entity.getViewCount())
-                            .writer(entity.getWriter())
-                            .build())
+                    .map(boardConverter::toBoardGetMyBoardsResponse2)
                     .collect(Collectors.toList());
 
             // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
