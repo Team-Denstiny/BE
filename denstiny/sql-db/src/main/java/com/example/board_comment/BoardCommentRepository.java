@@ -9,4 +9,6 @@ public interface BoardCommentRepository extends JpaRepository<BoardCommentEntity
     List<BoardCommentEntity> findBoardCommentByBoardAndParentCommentIsNull(BoardEntity board);
 
     List<BoardCommentEntity> findBoardCommentByParentComment(BoardCommentEntity boardComment);
+
+    Long countByBoard(BoardEntity board);
 }
