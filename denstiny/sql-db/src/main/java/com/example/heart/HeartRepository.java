@@ -15,6 +15,6 @@ public interface HeartRepository extends JpaRepository<HeartEntity, Long> {
     List<HeartEntity> findByUser(UserEntity user);
     Long countByBoard(BoardEntity board);
 
-    @Query("SELECT h.user.userId FROM HeartEntity h WHERE h.board.boardId = :boardId")
-    List<Long> findUserIdsByBoardId(@Param("boardId") Long boardId);
+    @Query("SELECT COUNT(h) > 0 FROM HeartEntity h WHERE h.board.boardId = :boardId AND h.user.userId = :userId")
+    Boolean existsByBoardIdAndUserId(@Param("boardId") Long boardId, @Param("userId") Long userId);
 }

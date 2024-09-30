@@ -124,7 +124,7 @@ public class BoardBusiness {
 
             // BoardEntity를 BoardGetBoardsResponse로 변환
             List<BoardGetBoardsResponse> responses = boardEntities.stream()
-                    .map(boardConverter::toBoardGetMyBoardsResponse2)
+                    .map(board -> boardConverter.toBoardGetMyBoardsResponse2(board, userId))
                     .collect(Collectors.toList());
 
             // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
@@ -134,7 +134,7 @@ public class BoardBusiness {
 
             // BoardEntity를 BoardGetBoardsResponse로 변환
             List<BoardGetBoardsResponse> responses = boardEntities.stream()
-                    .map(boardConverter::toBoardGetMyBoardsResponse2)
+                    .map(board -> boardConverter.toBoardGetMyBoardsResponse2(board, userId))
                     .collect(Collectors.toList());
 
             // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성

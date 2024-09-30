@@ -60,7 +60,7 @@ public class BoardConverter {
                             .build();
                 }).orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "BoardEntity is null"));
     }
-    public BoardGetBoardsResponse toBoardGetMyBoardsResponse2(BoardEntity board){
+    public BoardGetBoardsResponse toBoardGetMyBoardsResponse2(BoardEntity board, Long userId){
         return Optional.ofNullable(board)
                 .map(entity -> {
                     Long writer = entity.getWriter();
@@ -75,7 +75,7 @@ public class BoardConverter {
                             .createdAt(entity.getCreated_at())
                             .updatedAt(entity.getUpdated_at())
                             .heartCount(heartService.countByBoard(entity))
-                            .heartUsers(heartService.findUsersByBoard(entity.getBoardId()))
+                            .heartUser(heartService.isUserLikedBoard(entity.getBoardId(), userId))
                             .replyCount(boardCommentService.countBoardReply(entity))
                             .writer(writer)
                             .profileImg(user.getProfileImg())
