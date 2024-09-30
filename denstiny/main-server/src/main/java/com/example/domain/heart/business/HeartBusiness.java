@@ -39,7 +39,7 @@ public class HeartBusiness {
 
         // 3. 조회한 user와 board의 프록시 객체로 조회
         if(heartService.findByUserAndBoard(user, board).isPresent()){
-            System.out.println("이미 좋아요가 되어있어요.");
+            throw new ApiException(ErrorCode.BAD_REQUEST, "이미 좋아요가 되어있어요.");
         }
 
         return Optional.ofNullable(heartConverter.toHeartEntity(user, board))

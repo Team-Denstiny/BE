@@ -39,4 +39,7 @@ public class HeartService {
 
     // 좋아요 작성자 총 갯수
     public Long countByBoard(BoardEntity board) { return heartRepository.countByBoard(board); }
+
+    // 좋아요 작성자 반환
+    public List<Long> findUsersByBoard(Long boardId) {return heartRepository.findUserIdsByBoardId(boardId); }
 }
