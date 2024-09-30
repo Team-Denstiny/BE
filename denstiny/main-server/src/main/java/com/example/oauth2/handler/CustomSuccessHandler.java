@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshRepository refreshRepository;
     private final UserService userService;
 
+    @Value("${frontend.url}")
+    private String frontUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -57,8 +61,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie("access", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
-        
-        String frontUrl = "http://localhost:5173/signin/endpoint";
+
         if (userAddress == null) {
             response.sendRedirect(frontUrl+"?status=created");
         } else {
