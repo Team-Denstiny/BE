@@ -63,9 +63,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("refresh", refreshToken));
 
         if (userAddress == null) {
-            response.sendRedirect(frontUrl+"?status=created");
+            response.sendRedirect(frontUrl+"/signin/endpoint?status=created");
         } else {
-            response.sendRedirect(frontUrl+"?status=logined");
+            response.sendRedirect(frontUrl+"/signin/endpoint?status=logined");
         }
     }
 
