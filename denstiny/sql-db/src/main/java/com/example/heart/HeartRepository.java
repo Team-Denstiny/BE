@@ -13,7 +13,6 @@ public interface HeartRepository extends JpaRepository<HeartEntity, Long> {
     Optional<HeartEntity> findByUserAndBoard(UserEntity user, BoardEntity board);
 
     List<HeartEntity> findByUser(UserEntity user);
-    Long countByBoard(BoardEntity board);
 
     // 리팩토링 전 로그인 한 유저가 게시판에 좋아요를 눌렀는지 확인하는 쿼리
     // @Query("SELECT COUNT(h) > 0 FROM HeartEntity h WHERE h.board.boardId = :boardId AND h.user.userId = :userId")

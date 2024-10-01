@@ -22,9 +22,9 @@ public class BoardGetBoardsResponse {
     private Integer category;
     private Integer viewCount;
     private Long writer;
-    private Long heartCount;
+    private Integer heartCount;
     private Boolean heartUser;
-    private Long replyCount;
+    private Integer commentCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
