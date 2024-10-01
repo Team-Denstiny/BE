@@ -36,6 +36,16 @@ public class BoardEntity extends BaseEntity {
     @Builder.Default
     private Integer viewCount = 0;
 
+    @ColumnDefault("0")
+    @Column(name = "comment_count",nullable = false)
+    @Builder.Default
+    private Integer commentCount = 0;
+
+    @ColumnDefault("0")
+    @Column(name = "heart_count",nullable = false)
+    @Builder.Default
+    private Integer heartCount = 0;
+
     @Column(name = "writer", nullable = false)
     private Long writer;
 
