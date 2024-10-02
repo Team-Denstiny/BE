@@ -13,6 +13,7 @@ import com.example.error.UserErrorCode;
 import com.example.user.UserEntity;
 import error.ErrorCode;
 import exception.ApiException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class BoardCommentBusiness {
     private BoardCommentService boardCommentService;
     private BoardCommentConverter boardCommentConverter;
 
+    @Transactional
     public String addBoardComment(Long userId, Long boardId, BoardCommentAddRequest req) {
         UserEntity user = userService.getReferenceUserId(userId);
         BoardEntity board = boardService.getReferenceBoardId(boardId);
@@ -36,6 +38,10 @@ public class BoardCommentBusiness {
         boardCommentEntity.setParentComment(null);
 
         boardCommentService.saveBoardComment(boardCommentEntity);
+
+        // 게시글의 comment_count +1
+        board.setCommentCount(board.getCommentCount() + 1);
+        boardService.updateBoard(board);
 
         return boardId + "게시글에 댓글이 추가되었습니다.";
     }
@@ -52,6 +58,12 @@ public class BoardCommentBusiness {
         }
 
         boardCommentService.deleteById(boardCommentId);
+
+        // 게시글의 comment_count -1
+        BoardEntity board = boardService.getReferenceBoardId(boardId);
+
+        board.setCommentCount(board.getCommentCount() - 1);
+        boardService.updateBoard(board);
 
         return boardId + "번 게시글의 " + boardCommentId + "번 댓글이 성공적으로 삭제되었습니다.";
     }
@@ -76,7 +88,9 @@ public class BoardCommentBusiness {
 
     public List<BoardCommentResponse> findBoardCommentsByBoard(Long userId, Long boardId) {
         BoardEntity board = boardService.getReferenceBoardId(boardId);
-        return boardCommentService.findBoardCommentByBoardAndParentCommentIsNull(board).stream()
+
+
+        List<BoardCommentResponse> responses = boardCommentService.findBoardCommentByBoardAndParentCommentIsNull(board).stream()
                 .map(boardComment -> {
                     BoardCommentResponse boardCommentResponse = boardCommentConverter.toBoardCommentResponse(boardComment);
                     boardCommentResponse.setChildrenComment(
@@ -87,5 +101,10 @@ public class BoardCommentBusiness {
                     return boardCommentResponse;
                 })
                 .collect(Collectors.toList());
+
+        board.setViewCount(board.getViewCount() + 1);
+        boardService.updateBoard(board);
+
+        return responses;
     }
 }

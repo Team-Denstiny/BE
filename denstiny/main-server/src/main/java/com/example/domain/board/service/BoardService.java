@@ -45,6 +45,10 @@ public class BoardService {
         return boardRepository.findByCategory(category, of);
     }
 
+    public void updateBoard(BoardEntity board) {
+        boardRepository.save(board);
+    }
+
 //    // 게시글 프록시 객체 ID 조회 - findById
 //    public Optional<BoardEntity> getReferenceBoardId(Long boardId) {
 //        return boardRepository.findById(boardId);
