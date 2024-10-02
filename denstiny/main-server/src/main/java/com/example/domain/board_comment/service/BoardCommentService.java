@@ -41,8 +41,4 @@ public class BoardCommentService {
     public List<BoardCommentEntity> findBoardCommentByParentComment(BoardCommentEntity boardComment) {
         return boardCommentRepository.findBoardCommentByParentComment(boardComment);
     }
-
-    public Long countBoardReply(BoardEntity boardEntity){
-        return boardCommentRepository.countByBoard(boardEntity);
-    }
 }
