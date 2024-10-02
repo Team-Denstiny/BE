@@ -39,8 +39,12 @@ public class HeartBusiness {
 
         // 3. 조회한 user와 board의 프록시 객체로 조회
         if(heartService.findByUserAndBoard(user, board).isPresent()){
-            System.out.println("이미 좋아요가 되어있어요.");
+            throw new ApiException(ErrorCode.BAD_REQUEST, "이미 좋아요가 되어있어요.");
         }
+
+        // 4. 게시글의 heart_count 값 +1
+        board.setHeartCount(board.getHeartCount() + 1);
+        boardService.updateBoard(board);
 
         return Optional.ofNullable(heartConverter.toHeartEntity(user, board))
                 .map(it -> heartService.addHeart(it))
@@ -60,6 +64,10 @@ public class HeartBusiness {
         // 조회한 user와 board의 프록시 객체로 조회
         HeartEntity heart = heartService.findByUserAndBoard(user, board)
                 .orElseThrow(() -> new ApiException(ErrorCode.NULL_POINT, "Heart is null"));
+
+        // 게시글의 heart_count 값 -1
+        board.setHeartCount(board.getHeartCount() - 1);
+        boardService.updateBoard(board);
 
         // 존재하면, 해당 좋아요 삭제
         heartService.deleteHeart(heart);
