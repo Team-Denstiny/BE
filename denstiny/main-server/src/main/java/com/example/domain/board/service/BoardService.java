@@ -34,8 +34,8 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    // 게시글 조회
-    public List<BoardEntity> findByWriter(Long writer) { return boardRepository.findByWriter(writer); }
+    // 게시글 조회 - 작성자에 따른 게시글 조회
+    public Page<BoardEntity> findByWriter(Long writer, PageRequest of) { return boardRepository.findByWriter(writer, of); }
 
     public Page<BoardEntity> findAll(PageRequest of) {
         return boardRepository.findAll(of);

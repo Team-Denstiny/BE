@@ -46,8 +46,8 @@ public class BoardController {
     public Api<Page<BoardGetBoardsResponse>> findBoardsByCategory(
             @PathVariable("userId") Long userId,
             @PathVariable("category") Long category,
-            @RequestParam(defaultValue = "0",name = "page") int page,
-            @RequestParam(defaultValue = "10",name = "size") int size
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
     ) {
         Page<BoardGetBoardsResponse> boards = boardBusiness.findBoardsByCategory(userId, category, page, size);
         return new Api<>(new Result(200, "카테고리에 따른 게시글 조회 성공", "성공"), boards);
@@ -55,18 +55,22 @@ public class BoardController {
 
     // 게시글 조회 - 내가 쓴 글
     @GetMapping("/{userId}/board/myboards")
-    public Api<List<BoardGetBoardsResponse>> getMyBoards(
-            @PathVariable("userId") Long userId
+    public Api<Page<BoardGetBoardsResponse>> findMyBoards(
+            @PathVariable("userId") Long userId,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
     ) {
-        return new Api<>(new Result(200, "성공", "게시글 내가 쓴 글 조회 성공"), boardBusiness.getMyBoards(userId));
+        Page<BoardGetBoardsResponse> boards = boardBusiness.findMyBoards(userId, page, size);
+        return new Api<>(new Result(200, "내가 쓴 글 조회 성공", "게시글 내가 쓴 글 조회 성공"), boards);
     }
 
     // 게시글 조회 - 내가 좋아요 한 글
     @GetMapping("/{userId}/board/myheartboards")
-    public Api<List<BoardGetBoardsResponse>> getMyHeartBoards(
+    public Api<List<BoardGetBoardsResponse>> findMyHeartBoards(
             @PathVariable("userId") Long userId
     ) {
-        return new Api<>(new Result(200, "성공", "게시글 내가 좋아요 한 글 조회 성공"), boardBusiness.getMyHeartBoards(userId));
+        List<BoardGetBoardsResponse> boards = boardBusiness.findMyHeartBoards(userId);
+        return new Api<>(new Result(200, "성공", "내가 좋아요 한 글 조회 성공"), boards);
     }
 
     // 게시글 수정

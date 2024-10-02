@@ -88,31 +88,26 @@ public class BoardBusiness {
         return "유저" + userId + "이 게시글 번호" + boardId + "게시글 삭제에 실패하였습니다.";
     }
 
-//    // 게시글 조회 - 카테고리에 따른 게시글
-//    public List<ReviewResponse> findBoardsByCategory(Long userId, Long category, Integer page, Integer size) {
-//        return commentRepository.findByBoard(board, PageRequest.of(page, size));
-//    }
-
     // 게시글 조회 - 내가 쓴 글
-    public List<BoardGetBoardsResponse> getMyBoards(Long userId) {
-        List<BoardEntity> boards = boardService.findByWriter(userId);
+    public Page<BoardGetBoardsResponse> findMyBoards(Long userId, Integer page, Integer size) {
+        Page<BoardEntity> boardEntities = boardService.findByWriter(userId, PageRequest.of(page, size));
 
-        return boards.stream()
-                .map(board -> {
-                    BoardGetBoardsResponse boardGetBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(board);
-                    boardGetBoardsResponse.setHeartCount(heartService.countByBoard(board));
-                    return boardGetBoardsResponse;
-                }).collect(Collectors.toList());
+        // BoardEntity를 BoardGetBoardsResponse로 변환
+        List<BoardGetBoardsResponse> responses = boardEntities.stream()
+                .map(board -> boardConverter.toBoardGetMyBoardsResponse2(board, userId))
+                .collect(Collectors.toList());
+
+        // 변환된 리스트와 페이지 정보를 사용하여 PageImpl 생성
+        return new PageImpl<>(responses, boardEntities.getPageable(), boardEntities.getTotalElements());
     }
 
     // 게시글 조회 - 내가 좋아요 한 글
-    public List<BoardGetBoardsResponse> getMyHeartBoards(Long userId) {
+    public List<BoardGetBoardsResponse> findMyHeartBoards(Long userId) {
         UserEntity user = userService.getReferenceUserId(userId);
 
         return heartService.findByUser(user).stream()
                 .map(heart -> {
-                    BoardGetBoardsResponse boardGetBoardsResponse = boardConverter.toBoardGetMyBoardsResponse(heart.getBoard());
-                    boardGetBoardsResponse.setHeartCount(heartService.countByBoard(heart.getBoard()));
+                    BoardGetBoardsResponse boardGetBoardsResponse = boardConverter.toBoardGetMyBoardsResponse2(heart.getBoard(), userId);
                     return boardGetBoardsResponse;
                 }).collect(Collectors.toList());
     }
