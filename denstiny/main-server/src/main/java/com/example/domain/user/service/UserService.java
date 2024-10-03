@@ -91,6 +91,12 @@ public class UserService {
         if (request.getProfileImg() != null) {
             userEntity.setProfileImg(request.getProfileImg());
         }
+        if (request.getLatitude() != null) {
+            userEntity.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            userEntity.setLongitude(request.getLongitude());
+        }
 
         // 변경 사항 저장
         return userRepository.save(userEntity);
