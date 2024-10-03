@@ -75,7 +75,7 @@ public class BoardConverter {
                             .createdAt(entity.getCreated_at())
                             .updatedAt(entity.getUpdated_at())
                             .heartCount(entity.getHeartCount())
-                            .heartUser(heartService.isUserLikedBoard(entity.getBoardId(), userId))
+//                            .heartUser(heartService.isUserLikedBoard(entity.getBoardId(), userId))
                             .commentCount(entity.getCommentCount())
                             .writer(writer)
                             .profileImg(user.getProfileImg())

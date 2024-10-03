@@ -23,7 +23,7 @@ public class BoardGetBoardsResponse {
     private Integer viewCount;
     private Long writer;
     private Integer heartCount;
-    private Boolean heartUser;
+//    private Boolean heartUser;
     private Integer commentCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

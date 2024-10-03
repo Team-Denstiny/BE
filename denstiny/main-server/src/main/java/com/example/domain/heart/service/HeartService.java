@@ -40,7 +40,7 @@ public class HeartService {
     }
 
     // 로그인한 유저가 좋아요한 게시글인지 아닌지 확인
-    public Boolean isUserLikedBoard(Long boardId, Long userId) {
-        return heartRepository.existsByBoard_BoardIdAndUser_UserId(boardId, userId);
-    }
+//    public Boolean isUserLikedBoard(Long boardId, Long userId) {
+//        return heartRepository.existsByBoard_BoardIdAndUser_UserId(boardId, userId);
+//    }
 }

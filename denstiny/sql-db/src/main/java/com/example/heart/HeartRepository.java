@@ -22,5 +22,5 @@ public interface HeartRepository extends JpaRepository<HeartEntity, Long> {
     // 에러: JPQL에서 아래 쿼리 처리에서 에러 발생
     //    @Query("SELECT EXISTS (SELECT 1 FROM HeartEntity h WHERE h.board.boardId = :boardId AND h.user.userId = :userId")
     //    Boolean existsByBoardIdAndUserId(@Param("boardId") Long boardId, @Param("userId") Long userId);
-    Boolean existsByBoard_BoardIdAndUser_UserId(Long boardId, Long userId);
+//    Boolean existsByBoard_BoardIdAndUser_UserId(Long boardId, Long userId);
 }
