@@ -1,6 +1,6 @@
 ### 기술스택
-Front: React
-Back: Spring Boot
+Front: React <br>
+Back: Spring Boot <br>
 DB: MySQL, MongoDB, Redis
 
 ### 아키텍처
